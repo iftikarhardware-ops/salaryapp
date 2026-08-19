@@ -4,7 +4,8 @@ import {
   PayrollCycle, 
   AdvanceLoanRecord, 
   CompanySettings, 
-  PayrollItem 
+  PayrollItem,
+  DailyAttendanceRecord
 } from './types/payroll';
 import { AuthUser } from './types/auth';
 import { 
@@ -16,6 +17,8 @@ import {
   saveAdvanceLoans, 
   loadSettings, 
   saveSettings,
+  loadAttendanceMap,
+  saveAttendanceMap,
   initialEmployees,
   initialCompanySettings,
   initialAdvanceLoans,
@@ -32,6 +35,7 @@ import { calculateCycleTotals } from './utils/calculations';
 import { Header } from './components/Header';
 import { MetricCards } from './components/MetricCards';
 import { PayrollManager } from './components/PayrollManager';
+import { AttendanceManager } from './components/AttendanceManager';
 import { EmployeeManager } from './components/EmployeeManager';
 import { MasterSalarySheet } from './components/MasterSalarySheet';
 import { AdvanceLoanManager } from './components/AdvanceLoanManager';
@@ -57,6 +61,11 @@ export default function App() {
   const [advances, setAdvances] = useState<AdvanceLoanRecord[]>(loadAdvanceLoans);
   const [settings, setSettings] = useState<CompanySettings>(loadSettings);
   
+  // Attendance State
+  const [attendanceMap, setAttendanceMap] = useState<Record<string, Record<string, DailyAttendanceRecord>>>(() => {
+    return loadAttendanceMap(selectedCycleId, employees);
+  });
+
   // UI States
   const [activeTab, setActiveTab] = useState<string>('payroll');
   const [activePayslipItem, setActivePayslipItem] = useState<PayrollItem | null>(null);
@@ -88,6 +97,17 @@ export default function App() {
   useEffect(() => {
     saveSettings(settings);
   }, [settings]);
+
+  // Reload attendance when active cycle changes
+  useEffect(() => {
+    const loaded = loadAttendanceMap(selectedCycleId, employees);
+    setAttendanceMap(loaded);
+  }, [selectedCycleId]);
+
+  const handleUpdateAttendance = (newMap: Record<string, Record<string, DailyAttendanceRecord>>) => {
+    setAttendanceMap(newMap);
+    saveAttendanceMap(selectedCycleId, newMap);
+  };
 
   // Current active cycle
   const currentCycle = cycles.find(c => c.id === selectedCycleId) || cycles[0] || createInitialPayrollCycle(employees);
@@ -204,7 +224,7 @@ export default function App() {
     setCurrentUser(null);
   };
 
-  // If user is not logged in, render the Login Screen
+  // If user is not logged in, render Login Screen
   if (!currentUser) {
     return (
       <LoginScreen
@@ -217,7 +237,7 @@ export default function App() {
     );
   }
 
-  // If logged in as an Employee
+  // If logged in as Employee
   const isEmployeeRole = currentUser.role === 'employee';
   const matchedEmployee = employees.find(e => e.id === currentUser.employeeId || e.email.toLowerCase() === currentUser.email.toLowerCase()) || employees[0];
 
@@ -254,8 +274,8 @@ export default function App() {
         ) : (
           /* ACCOUNTANT & MANAGEMENT DASHBOARD */
           <>
-            {/* Metric Cards Banner (shown in payroll, employees, and sheet views) */}
-            {['payroll', 'employees', 'sheet'].includes(activeTab) && (
+            {/* Metric Cards Banner (shown in payroll, attendance, employees, and sheet views) */}
+            {['payroll', 'attendance', 'employees', 'sheet'].includes(activeTab) && (
               <MetricCards
                 totalEmployees={cycleTotals.totalEmployees}
                 totalGross={cycleTotals.totalGross}
@@ -286,7 +306,19 @@ export default function App() {
               />
             )}
 
-            {/* Tab 2: Employee Database & Salary Setup */}
+            {/* Tab 2: Attendance Register & Biometric Tracker */}
+            {activeTab === 'attendance' && currentCycle && (
+              <AttendanceManager
+                employees={employees}
+                cycle={currentCycle}
+                attendanceMap={attendanceMap}
+                onUpdateAttendance={handleUpdateAttendance}
+                onUpdateCycle={handleUpdateCycle}
+                settings={settings}
+              />
+            )}
+
+            {/* Tab 3: Employee Database & Salary Setup */}
             {activeTab === 'employees' && (
               <EmployeeManager
                 employees={employees}
@@ -296,7 +328,7 @@ export default function App() {
               />
             )}
 
-            {/* Tab 3: Master Salary Register Sheet */}
+            {/* Tab 4: Master Salary Register Sheet */}
             {activeTab === 'sheet' && currentCycle && (
               <MasterSalarySheet
                 cycle={currentCycle}
@@ -305,7 +337,7 @@ export default function App() {
               />
             )}
 
-            {/* Tab 4: Advances & Loans Ledger */}
+            {/* Tab 5: Advances & Loans Ledger */}
             {activeTab === 'advances' && (
               <AdvanceLoanManager
                 records={advances}
@@ -316,7 +348,7 @@ export default function App() {
               />
             )}
 
-            {/* Tab 5: Bank Advice Statement */}
+            {/* Tab 6: Bank Advice Statement */}
             {activeTab === 'bank' && currentCycle && (
               <div className="bg-white p-6 border border-slate-200 rounded-xl shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
@@ -347,7 +379,7 @@ export default function App() {
               </div>
             )}
 
-            {/* Tab 6: Company Settings */}
+            {/* Tab 7: Company Settings */}
             {activeTab === 'settings' && (
               <SettingsModal
                 settings={settings}

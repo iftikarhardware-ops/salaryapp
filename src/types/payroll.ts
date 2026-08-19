@@ -13,10 +13,22 @@ export type PaymentMethod = 'Bank Transfer' | 'Cash' | 'bKash' | 'Nagad' | 'Rock
 
 export type PayrollStatus = 'Draft' | 'Verified' | 'Approved' | 'Paid';
 
+export type AttendanceStatus = 'P' | 'A' | 'HD' | 'L' | 'WO' | 'H'; // Present, Absent, Half Day, Leave, Weekly Off, Holiday
+
+export interface DailyAttendanceRecord {
+  date: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+  checkIn?: string; // HH:MM
+  checkOut?: string; // HH:MM
+  lateMinutes?: number;
+  overtimeHours?: number;
+  remarks?: string;
+}
+
 export interface Employee {
   id: string; // EMP-001
-  name: string; // Ariful Huq
-  banglaName: string; // আরিফুল হক
+  name: string; // Rahul Sharma
+  banglaName: string;
   designation: string; // Software Engineer
   department: Department;
   joinDate: string; // YYYY-MM-DD
@@ -27,21 +39,21 @@ export interface Employee {
   
   // Payment Details
   paymentMethod: PaymentMethod;
-  bankName: string; // e.g., 'Dutch-Bangla Bank', 'BRAC Bank', 'City Bank', 'Islami Bank'
+  bankName: string;
   accountNumber: string;
   accountTitle: string;
   branchName: string;
   routingNumber?: string;
-  mfsNumber?: string; // For bKash/Nagad
+  mfsNumber?: string;
 
   // Salary Structure (No PF / No ESI)
-  basicSalary: number; // মূল বেতন
-  houseRentAllowance: number; // বাড়ি ভাড়া
-  medicalAllowance: number; // চিকিৎসা ভাতা
-  conveyanceAllowance: number; // যাতায়াত ভাতা
-  foodAllowance: number; // খাবার ভাতা
-  specialAllowance: number; // বিশেষ ভাতা
-  overtimeHourlyRate?: number; // per hour rate (if 0, auto-calculated)
+  basicSalary: number;
+  houseRentAllowance: number;
+  medicalAllowance: number;
+  conveyanceAllowance: number;
+  foodAllowance: number;
+  specialAllowance: number;
+  overtimeHourlyRate?: number;
 }
 
 export interface PayrollItem {
@@ -60,49 +72,46 @@ export interface PayrollItem {
   absentDays: number;
   leaveDays: number;
   overtimeHours: number;
+  overtimeHourlyRate: number;
+  overtimeAmount: number;
 
-  // Earnings Breakdown
+  // Monthly Gross Allowances Breakdown
   basicSalary: number;
   houseRentAllowance: number;
   medicalAllowance: number;
   conveyanceAllowance: number;
   foodAllowance: number;
   specialAllowance: number;
-  bonusAmount: number; // উৎসব / পারফর্মেন্স বোনাস
-  overtimeAmount: number;
-  totalGrossSalary: number; // সর্বমোট উপার্জন (Gross)
+  bonusAmount: number;
+  totalAllowances: number;
+  totalGrossSalary: number;
 
-  // Deductions Breakdown (Strictly NO PF, NO ESI)
-  absenceDeduction: number; // অনুপস্থিতি কর্তন
-  advanceSalaryDeduction: number; // অগ্রিম বেতন কর্তন
-  loanEmiDeduction: number; // ঋণ কিস্তি
-  lateFineDeduction: number; // লেট জরিমানা
-  taxDeduction: number; // আয়কর / TDS
-  otherDeduction: number; // অন্যান্য কর্তন
-  otherDeductionReason?: string;
-  totalDeductions: number; // সর্বমোট কর্তন
+  // Deductions (Strictly No PF/ESI)
+  absenceDeduction: number;
+  advanceSalaryDeduction: number;
+  loanDeduction: number;
+  lateFineDeduction: number;
+  taxDeduction: number;
+  otherDeduction: number;
+  totalDeductions: number;
 
-  // Final Payable
-  netPayable: number; // সর্বমোট প্রদেয় বেতন (Net Salary)
-  
-  // Status & Payment Info
+  // Final Payout
+  netPayable: number;
   isPaid: boolean;
-  paymentDate?: string;
-  transactionRef?: string;
+  paidAt?: string;
   remarks?: string;
 }
 
 export interface PayrollCycle {
-  id: string; // '2026-08'
-  month: string; // 'August'
-  banglaMonth: string; // 'আগস্ট'
-  year: number; // 2026
+  id: string; // e.g., '2026-08'
+  month: string; // e.g., 'August'
+  banglaMonth: string;
+  year: number; // e.g., 2026
   status: PayrollStatus;
   workingDays: number;
   createdAt: string;
   verifiedAt?: string;
   approvedAt?: string;
-  disbursedAt?: string;
   items: PayrollItem[];
   notes?: string;
 }
@@ -129,12 +138,29 @@ export interface CompanySettings {
   phone: string;
   email: string;
   website: string;
-  currencySymbol: string; // '৳' or 'BDT' or 'Tk'
-  currencyCode: string; // 'BDT'
+  currencySymbol: string;
+  currencyCode: string;
   defaultWorkingDays: number;
   accountantName: string;
   accountantTitle: string;
   approverName: string;
   approverTitle: string;
-  pfEsiNote: string; // "এই প্রতিষ্ঠানে PF এবং ESI কর্তন প্রযোজ্য নয় (No PF & ESI Applied)"
+  pfEsiNote: string;
+}
+
+export interface PayrollTotals {
+  totalEmployees: number;
+  totalBasic: number;
+  totalAllowances: number;
+  totalGross: number;
+  totalAbsenceDeductions: number;
+  totalAdvanceDeductions: number;
+  totalOtherDeductions: number;
+  totalDeductions: number;
+  totalNetPayable: number;
+  bankTotal: number;
+  cashTotal: number;
+  mfsTotal: number;
+  paidCount: number;
+  pendingCount: number;
 }

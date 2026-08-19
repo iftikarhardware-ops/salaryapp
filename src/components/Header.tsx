@@ -165,6 +165,18 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
+            onClick={() => setActiveTab('attendance')}
+            className={`flex items-center gap-2 px-4 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap ${
+              activeTab === 'attendance'
+                ? 'border-indigo-600 text-indigo-700 bg-indigo-50/40'
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <Calendar className="w-4 h-4" />
+            Attendance Register
+          </button>
+
+          <button
             onClick={() => setActiveTab('employees')}
             className={`flex items-center gap-2 px-4 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap ${
               activeTab === 'employees'

@@ -1,10 +1,11 @@
-import { Employee, PayrollCycle, AdvanceLoanRecord, CompanySettings } from '../types/payroll';
+import { Employee, PayrollCycle, AdvanceLoanRecord, CompanySettings, DailyAttendanceRecord, AttendanceStatus } from '../types/payroll';
 import { calculatePayrollItem } from './calculations';
 
 const EMPLOYEES_KEY = 'eliteedge_inr_payroll_employees_v1';
 const CYCLES_KEY = 'eliteedge_inr_payroll_cycles_v1';
 const ADVANCES_KEY = 'eliteedge_inr_payroll_advances_v1';
 const SETTINGS_KEY = 'eliteedge_inr_payroll_settings_v1';
+const ATTENDANCE_PREFIX = 'eliteedge_inr_attendance_';
 
 export const initialCompanySettings: CompanySettings = {
   companyName: 'EliteEdge Accounting & Financial Advisory India Pvt. Ltd.',
@@ -299,6 +300,76 @@ export function createInitialPayrollCycle(employees: Employee[]): PayrollCycle {
     items,
     notes: 'August 2026 EliteEdge India Corporate Payroll Cycle (Non-Contributory No PF/ESI)'
   };
+}
+
+export function generateInitialMonthAttendance(
+  year: number,
+  monthIndex: number, // 0 = Jan, 7 = Aug
+  employees: Employee[]
+): Record<string, Record<string, DailyAttendanceRecord>> {
+  const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+  const attendance: Record<string, Record<string, DailyAttendanceRecord>> = {};
+
+  employees.forEach(emp => {
+    attendance[emp.id] = {};
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dayOfWeek = new Date(year, monthIndex, d).getDay(); // 0 = Sunday
+
+      let status: AttendanceStatus = 'P';
+      let checkIn = '09:30';
+      let checkOut = '18:30';
+      let lateMinutes = 0;
+
+      if (dayOfWeek === 0) {
+        status = 'WO'; // Weekly Off
+        checkIn = undefined as any;
+        checkOut = undefined as any;
+      } else if (emp.id === 'EMP-101' && d === 12) {
+        status = 'P';
+        lateMinutes = 35;
+        checkIn = '10:05';
+      } else if (emp.id === 'EMP-105' && d === 18) {
+        status = 'L'; // Approved Leave
+        checkIn = undefined as any;
+        checkOut = undefined as any;
+      }
+
+      attendance[emp.id][dateStr] = {
+        date: dateStr,
+        status,
+        checkIn,
+        checkOut,
+        lateMinutes
+      };
+    }
+  });
+
+  return attendance;
+}
+
+export function loadAttendanceMap(cycleId: string, employees: Employee[]): Record<string, Record<string, DailyAttendanceRecord>> {
+  try {
+    const raw = localStorage.getItem(`${ATTENDANCE_PREFIX}${cycleId}`);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error loading attendance map', e);
+  }
+
+  const [yearStr, monthStr] = cycleId.split('-');
+  const year = parseInt(yearStr) || 2026;
+  const monthIndex = (parseInt(monthStr) || 8) - 1;
+  const initial = generateInitialMonthAttendance(year, monthIndex, employees);
+  saveAttendanceMap(cycleId, initial);
+  return initial;
+}
+
+export function saveAttendanceMap(cycleId: string, data: Record<string, Record<string, DailyAttendanceRecord>>) {
+  try {
+    localStorage.setItem(`${ATTENDANCE_PREFIX}${cycleId}`, JSON.stringify(data));
+  } catch (e) {
+    console.error('Error saving attendance map', e);
+  }
 }
 
 export function loadEmployees(): Employee[] {

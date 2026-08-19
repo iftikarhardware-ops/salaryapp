@@ -1,4 +1,4 @@
-import { Employee, PayrollItem } from '../types/payroll';
+import { Employee, PayrollItem, PayrollTotals } from '../types/payroll';
 
 /**
  * Calculates accurate payroll items for an employee based on attendance & allowances/deductions
@@ -13,11 +13,11 @@ export function calculatePayrollItem(
   overtimeHours: number,
   bonusAmount: number = 0,
   advanceDeduction: number = 0,
-  loanEmiDeduction: number = 0,
+  loanDeduction: number = 0,
   lateFineDeduction: number = 0,
   taxDeduction: number = 0,
   otherDeduction: number = 0,
-  otherDeductionReason: string = '',
+  remarks: string = '',
   existingItem?: Partial<PayrollItem>
 ): PayrollItem {
   const basic = Number(employee.basicSalary) || 0;
@@ -38,11 +38,13 @@ export function calculatePayrollItem(
     : Math.round((dailyRate / 8) * 1.5);
   const calculatedOvertimeAmount = Math.round(hourlyRate * Math.max(0, overtimeHours));
 
+  const totalAllowances = houseRent + medical + conveyance + food + special;
+
   // Total Gross Salary
-  const totalGross = basic + houseRent + medical + conveyance + food + special + bonusAmount + calculatedOvertimeAmount;
+  const totalGross = basic + totalAllowances + bonusAmount + calculatedOvertimeAmount;
 
   // Total Deductions (NO PF, NO ESI)
-  const totalDeduct = calculatedAbsenceDeduction + advanceDeduction + loanEmiDeduction + lateFineDeduction + taxDeduction + otherDeduction;
+  const totalDeduct = calculatedAbsenceDeduction + advanceDeduction + loanDeduction + lateFineDeduction + taxDeduction + otherDeduction;
 
   // Net Payable
   const netPay = Math.max(0, totalGross - totalDeduct);
@@ -61,6 +63,8 @@ export function calculatePayrollItem(
     absentDays: Math.max(0, absentDays),
     leaveDays: Math.max(0, leaveDays),
     overtimeHours: Math.max(0, overtimeHours),
+    overtimeHourlyRate: hourlyRate,
+    overtimeAmount: calculatedOvertimeAmount,
 
     basicSalary: basic,
     houseRentAllowance: houseRent,
@@ -69,39 +73,36 @@ export function calculatePayrollItem(
     foodAllowance: food,
     specialAllowance: special,
     bonusAmount: bonusAmount,
-    overtimeAmount: calculatedOvertimeAmount,
+    totalAllowances: totalAllowances,
     totalGrossSalary: totalGross,
 
     absenceDeduction: calculatedAbsenceDeduction,
     advanceSalaryDeduction: advanceDeduction,
-    loanEmiDeduction: loanEmiDeduction,
+    loanDeduction: loanDeduction,
     lateFineDeduction: lateFineDeduction,
     taxDeduction: taxDeduction,
     otherDeduction: otherDeduction,
-    otherDeductionReason: otherDeductionReason,
     totalDeductions: totalDeduct,
 
     netPayable: netPay,
     isPaid: existingItem?.isPaid || false,
-    paymentDate: existingItem?.paymentDate,
-    transactionRef: existingItem?.transactionRef || '',
-    remarks: existingItem?.remarks || ''
+    paidAt: existingItem?.paidAt,
+    remarks: remarks || existingItem?.remarks || ''
   };
 }
 
-export function calculateCycleTotals(items: PayrollItem[]) {
+export function calculateCycleTotals(items: PayrollItem[]): PayrollTotals {
   return items.reduce((acc, item) => {
     acc.totalEmployees += 1;
     acc.totalBasic += item.basicSalary;
-    acc.totalAllowances += (item.houseRentAllowance + item.medicalAllowance + item.conveyanceAllowance + item.foodAllowance + item.specialAllowance);
-    acc.totalBonus += item.bonusAmount;
-    acc.totalOvertime += item.overtimeAmount;
+    acc.totalAllowances += item.totalAllowances;
     acc.totalGross += item.totalGrossSalary;
+    acc.totalAbsenceDeductions += item.absenceDeduction;
+    acc.totalAdvanceDeductions += item.advanceSalaryDeduction + item.loanDeduction;
+    acc.totalOtherDeductions += item.lateFineDeduction + item.taxDeduction + item.otherDeduction;
     acc.totalDeductions += item.totalDeductions;
     acc.totalNetPayable += item.netPayable;
-    acc.paidCount += item.isPaid ? 1 : 0;
-    acc.unpaidCount += !item.isPaid ? 1 : 0;
-    
+
     if (item.paymentMethod === 'Bank Transfer') {
       acc.bankTotal += item.netPayable;
     } else if (item.paymentMethod === 'Cash') {
@@ -110,20 +111,27 @@ export function calculateCycleTotals(items: PayrollItem[]) {
       acc.mfsTotal += item.netPayable;
     }
 
+    if (item.isPaid) {
+      acc.paidCount += 1;
+    } else {
+      acc.pendingCount += 1;
+    }
+
     return acc;
   }, {
     totalEmployees: 0,
     totalBasic: 0,
     totalAllowances: 0,
-    totalBonus: 0,
-    totalOvertime: 0,
     totalGross: 0,
+    totalAbsenceDeductions: 0,
+    totalAdvanceDeductions: 0,
+    totalOtherDeductions: 0,
     totalDeductions: 0,
     totalNetPayable: 0,
-    paidCount: 0,
-    unpaidCount: 0,
     bankTotal: 0,
     cashTotal: 0,
-    mfsTotal: 0
+    mfsTotal: 0,
+    paidCount: 0,
+    pendingCount: 0
   });
 }
