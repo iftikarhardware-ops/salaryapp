@@ -1,45 +1,45 @@
 import { AuthUser } from '../types/auth';
 
-const USERS_KEY = 'eliteedge_auth_users_v3';
-const CURRENT_USER_KEY = 'eliteedge_auth_current_user_v3';
+const USERS_KEY = 'eliteedge_inr_auth_users_v1';
+const CURRENT_USER_KEY = 'eliteedge_inr_auth_current_user_v1';
 
 export const defaultUsers: AuthUser[] = [
   {
     id: 'USR-01',
-    name: 'Rahim Ahmed, FCMA',
-    banglaName: 'Rahim Ahmed',
-    email: 'accountant@eliteedge.com',
+    name: 'Vikramaditya Iyer, CA',
+    banglaName: 'Vikramaditya Iyer',
+    email: 'accountant@eliteedge.in',
     role: 'accountant',
-    designation: 'Chief Financial Accountant & Payroll Controller',
+    designation: 'Chief Financial Accountant & Corporate Controller',
     password: 'password123'
   },
   {
     id: 'USR-02',
-    name: 'Ahsan Habib',
-    banglaName: 'Ahsan Habib',
-    email: 'director@eliteedge.com',
+    name: 'Rajesh Mehra',
+    banglaName: 'Rajesh Mehra',
+    email: 'director@eliteedge.in',
     role: 'approver',
     designation: 'Managing Director & CEO',
     password: 'password123'
   },
   {
     id: 'USR-03',
-    name: 'Ariful Huq',
-    banglaName: 'Ariful Huq',
-    email: 'ariful.h@eliteedge.com',
+    name: 'Rahul Sharma',
+    banglaName: 'Rahul Sharma',
+    email: 'rahul.sharma@eliteedge.in',
     role: 'employee',
     employeeId: 'EMP-101',
-    designation: 'Lead Software Architect',
+    designation: 'Principal Software Architect',
     password: 'password123'
   },
   {
     id: 'USR-04',
-    name: 'Nadia Sultana',
-    banglaName: 'Nadia Sultana',
-    email: 'nadia.s@eliteedge.com',
+    name: 'Priya Nair',
+    banglaName: 'Priya Nair',
+    email: 'priya.nair@eliteedge.in',
     role: 'employee',
     employeeId: 'EMP-102',
-    designation: 'Head of Global Marketing',
+    designation: 'Head of Brand & Growth Marketing',
     password: 'password123'
   }
 ];

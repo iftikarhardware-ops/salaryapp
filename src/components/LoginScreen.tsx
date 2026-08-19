@@ -21,7 +21,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   employees
 }) => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [identifier, setIdentifier] = useState('accountant@eliteedge.com');
+  const [identifier, setIdentifier] = useState('accountant@eliteedge.in');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');

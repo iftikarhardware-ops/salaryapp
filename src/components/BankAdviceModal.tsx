@@ -27,11 +27,11 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
   };
 
   const handleCopyText = () => {
-    let text = `SALARY DISBURSEMENT ADVICE STATEMENT\n`;
+    let text = `SALARY DISBURSEMENT ADVICE STATEMENT (NEFT / RTGS / ACH)\n`;
     text += `Company: ${settings.companyName}\n`;
     text += `Disbursement Period: ${cycle.month} ${cycle.year}\n`;
     text += `Total Net Transfer: ${formatCurrency(totalBankAmount, settings.currencySymbol)}\n\n`;
-    text += `SL | Emp ID | Employee Name | Bank Name | Account No | Amount (${settings.currencySymbol})\n`;
+    text += `SL | Emp ID | Beneficiary Name | Bank Name | Account No | Net Amount (${settings.currencySymbol})\n`;
     text += `------------------------------------------------------------------------------------\n`;
     bankItems.forEach((item, idx) => {
       text += `${idx + 1}. ${item.employeeId} | ${item.employeeName} | ${item.bankName} | ${item.accountNumber} | ${item.netPayable}\n`;
@@ -42,7 +42,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
   };
 
   const handleDownloadCSV = () => {
-    const headers = ['SL', 'Employee ID', 'Employee Name', 'Designation', 'Bank Name', 'Account Number', 'Routing Number', 'Net Salary Payable'];
+    const headers = ['SL', 'Employee ID', 'Beneficiary Name', 'Designation', 'Bank Name', 'Account Number', 'Payment Mode', 'Net Salary Payable (INR)'];
     const rows = bankItems.map((item, idx) => [
       idx + 1,
       item.employeeId,
@@ -50,7 +50,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
       `"${item.designation}"`,
       `"${item.bankName}"`,
       `"${item.accountNumber}"`,
-      '',
+      'NEFT / Direct Credit',
       item.netPayable
     ]);
 
@@ -58,7 +58,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `Bank_Salary_Advice_${cycle.month}_${cycle.year}.csv`);
+    link.setAttribute('download', `Bank_Salary_Advice_NEFT_${cycle.month}_${cycle.year}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -72,7 +72,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
           <div className="flex items-center gap-2">
             <Landmark className="w-4 h-4 text-indigo-400" />
             <h3 className="text-xs font-bold uppercase tracking-wider">
-              Bank Salary Transfer Advice & Disbursement Schedule
+              Bank Salary Transfer Advice (NEFT / RTGS / Direct Debit Schedule)
             </h3>
           </div>
           <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
               <div className="text-right">
                 <p className="text-xs font-bold text-slate-400 uppercase">Date of Issuance</p>
                 <p className="text-sm font-bold text-slate-900 font-mono">
-                  {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </p>
               </div>
             </div>
@@ -131,17 +131,17 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
             <div>
               <p className="font-bold">To</p>
               <p className="font-bold text-slate-900">The Branch Manager</p>
-              <p className="text-slate-600">Corporate Banking & Treasury Services</p>
+              <p className="text-slate-600">Corporate & Institutional Banking Operations</p>
             </div>
 
             <div className="bg-slate-100 p-2.5 rounded-lg font-bold text-slate-900">
-              Subject: Corporate Payroll Disbursement Schedule for {cycle.month} {cycle.year}
+              Subject: Corporate Payroll Disbursement Schedule via NEFT / RTGS for {cycle.month} {cycle.year}
             </div>
 
             <p>
               Dear Sir/Madam,<br />
               Please find enclosed the formal salary disbursement schedule for our employees for the payroll period of{' '}
-              <strong>{cycle.month} {cycle.year}</strong>. We hereby instruct and authorize you to debit our corporate account and credit the respective beneficiary accounts according to the schedule below:
+              <strong>{cycle.month} {cycle.year}</strong>. We hereby instruct and authorize you to debit our corporate current account and credit the respective beneficiary accounts according to the schedule below:
             </p>
           </div>
 
@@ -155,7 +155,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
                   <th className="px-3.5 py-2.5">Beneficiary Employee</th>
                   <th className="px-3.5 py-2.5">Beneficiary Bank</th>
                   <th className="px-3.5 py-2.5">Account Number</th>
-                  <th className="px-3.5 py-2.5 text-right">Net Payable Amount</th>
+                  <th className="px-3.5 py-2.5 text-right">Net Amount ({settings.currencySymbol})</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -202,7 +202,7 @@ export const BankAdviceModal: React.FC<BankAdviceModalProps> = ({
           </div>
 
           <p className="text-xs text-slate-600 mb-12">
-            Your timely execution of this salary transfer order is highly appreciated.
+            Your prompt execution of this salary transfer order is highly appreciated.
           </p>
 
           {/* Authorized Signatures */}

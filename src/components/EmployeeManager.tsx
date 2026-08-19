@@ -47,18 +47,18 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
     phone: '',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
-    bankName: 'BRAC Bank PLC',
+    bankName: 'HDFC Bank Ltd.',
     accountNumber: '',
     accountTitle: '',
-    branchName: 'Corporate Branch',
-    routingNumber: '',
-    basicSalary: 35000,
-    houseRentAllowance: 3000,
-    medicalAllowance: 1500,
-    conveyanceAllowance: 1000,
+    branchName: 'Corporate BKC Branch',
+    routingNumber: 'HDFC0000123',
+    basicSalary: 45000,
+    houseRentAllowance: 8000,
+    medicalAllowance: 2000,
+    conveyanceAllowance: 2000,
     foodAllowance: 0,
     specialAllowance: 0,
-    overtimeHourlyRate: 250
+    overtimeHourlyRate: 350
   });
 
   const departments = ['Engineering', 'IT & Software', 'Marketing & Sales', 'Accounts & Finance', 'Operations & Admin', 'Human Resources', 'Design & Creative', 'Customer Support'];
@@ -77,18 +77,18 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
       phone: '',
       status: 'Active',
       paymentMethod: 'Bank Transfer',
-      bankName: 'BRAC Bank PLC',
+      bankName: 'HDFC Bank Ltd.',
       accountNumber: '',
       accountTitle: '',
-      branchName: 'Main Branch',
-      routingNumber: '',
-      basicSalary: 35000,
-      houseRentAllowance: 3000,
-      medicalAllowance: 1500,
-      conveyanceAllowance: 1000,
+      branchName: 'BKC Corporate Branch',
+      routingNumber: 'HDFC0000123',
+      basicSalary: 45000,
+      houseRentAllowance: 8000,
+      medicalAllowance: 2000,
+      conveyanceAllowance: 2000,
       foodAllowance: 0,
       specialAllowance: 0,
-      overtimeHourlyRate: 250
+      overtimeHourlyRate: 350
     });
     setIsModalOpen(true);
   };

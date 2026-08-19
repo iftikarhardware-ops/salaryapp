@@ -1,6 +1,7 @@
 export type Department = 
   | 'Accounts & Finance' 
   | 'IT & Software' 
+  | 'Engineering'
   | 'Marketing & Sales' 
   | 'Human Resources' 
   | 'Operations & Admin' 

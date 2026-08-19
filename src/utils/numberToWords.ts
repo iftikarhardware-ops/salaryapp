@@ -1,106 +1,76 @@
-/**
- * Converts numeric salary figures into Bengali and English words for official Payslips & Bank Advices
- */
+// Indian English Currency Formatting and Number to Words Converter (Lakhs & Crores)
 
-const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-
-export function toBanglaNumber(num: number | string): string {
-  return String(num).replace(/\d/g, (d) => banglaDigits[parseInt(d, 10)]);
-}
-
-export function formatCurrency(amount: number, symbol: string = '৳', useBanglaNumber: boolean = false): string {
-  const rounded = Math.round(amount);
-  const formatted = new Intl.NumberFormat('en-IN').format(rounded);
-  if (useBanglaNumber) {
-    return `${symbol} ${toBanglaNumber(formatted)}`;
-  }
-  return `${symbol} ${formatted}`;
-}
-
-// Bengali number in words
-const bnUnits = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ', 
-  'এগারো', 'বারো', 'তেরো', 'চৌদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ', 'বিশ',
-  'একুশ', 'বাইশ', 'তেইশ', 'চব্বিশ', 'পঁচিশ', 'ছাব্বিশ', 'সাতাশ', 'আটাশ', 'ঊনত্রিশ', 'ত্রিশ',
-  'একত্রিশ', 'বত্রিশ', 'তেত্রিশ', 'চৌত্রিশ', 'পঁয়ত্রিশ', 'ছত্রিশ', 'সাঁইত্রিশ', 'আটত্রিশ', 'ঊনচল্লিশ', 'চল্লিশ',
-  'একচল্লিশ', 'বিয়াল্লিশ', 'তেতাল্লিশ', 'চুয়াল্লিশ', 'পঁয়তাল্লিশ', 'ছেচল্লিশ', 'সাতচল্লিশ', 'আটচল্লিশ', 'ঊনপঞ্চাশ', 'পঞ্চাশ',
-  'একান্ন', 'বায়ান্ন', 'তিপ্পান্ন', 'চুয়ান্ন', 'পঞ্চান্ন', 'ছাপ্পান্ন', 'সাতান্ন', 'আটান্ন', 'ঊনষাট', 'ষাট',
-  'একষট্টি', 'বাষট্টি', 'তেষট্টি', 'চৌষট্টি', 'পঁয়ষট্টি', 'ছেষট্টি', 'সাতষট্টি', 'আটষট্টি', 'ঊনসত্তর', 'সত্তর',
-  'একাত্তর', 'বাহাত্তর', 'তিয়াত্তর', 'চুয়াত্তর', 'পঁচাত্তর', 'ছিয়াত্তর', 'সাতাত্তর', 'আটাত্তর', 'ঊনআশি', 'আশি',
-  'একাশি', 'বিরাশি', 'তিরাশি', 'চুরাশি', 'পঁচাশি', 'ছিয়াশি', 'সাতাশি', 'অষ্টআশি', 'ঊননব্বই', 'নব্বই',
-  'একানব্বই', 'বানব্বই', 'তিরানব্বই', 'চুরানব্বই', 'পঁচানব্বই', 'ছিয়ানব্বই', 'সাতানব্বই', 'আটানব্বই', 'নিরানব্বই'];
-
-export function numberToBanglaWords(num: number): string {
-  const n = Math.floor(Math.abs(num));
-  if (n === 0) return 'শূন্য টাকা মাত্র';
-
-  let result = '';
+export function formatCurrency(amount: number, symbol: string = '₹'): string {
+  if (isNaN(amount)) return `${symbol} 0.00`;
   
-  const crore = Math.floor(n / 10000000);
-  const lakh = Math.floor((n % 10000000) / 100000);
-  const thousand = Math.floor((n % 100000) / 1000);
-  const hundred = Math.floor((n % 1000) / 100);
-  const rest = n % 100;
-
-  if (crore > 0) {
-    result += (crore < 100 ? bnUnits[crore] : numberToBanglaWordsHelper(crore)) + ' কোটি ';
+  // Format with Indian numbering system (e.g. 1,50,000.00)
+  const isNegative = amount < 0;
+  const absAmount = Math.abs(amount);
+  
+  const parts = absAmount.toFixed(2).split('.');
+  let integerPart = parts[0];
+  const decimalPart = parts[1];
+  
+  // Indian comma separation: last 3 digits, then every 2 digits
+  if (integerPart.length > 3) {
+    const lastThree = integerPart.substring(integerPart.length - 3);
+    const otherNumbers = integerPart.substring(0, integerPart.length - 3);
+    integerPart = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' + lastThree;
   }
-  if (lakh > 0) {
-    result += bnUnits[lakh] + ' লাখ ';
-  }
-  if (thousand > 0) {
-    result += bnUnits[thousand] + ' হাজার ';
-  }
-  if (hundred > 0) {
-    result += bnUnits[hundred] + ' শত ';
-  }
-  if (rest > 0) {
-    result += bnUnits[rest] + ' ';
-  }
-
-  return result.trim() + ' টাকা মাত্র';
+  
+  const formatted = `${symbol} ${integerPart}.${decimalPart}`;
+  return isNegative ? `-${formatted}` : formatted;
 }
 
-function numberToBanglaWordsHelper(n: number): string {
-  if (n < 100) return bnUnits[n] || '';
-  const h = Math.floor(n / 100);
-  const r = n % 100;
-  return (bnUnits[h] ? bnUnits[h] + ' শত ' : '') + (bnUnits[r] ? bnUnits[r] : '');
+const ones = [
+  '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+  'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
+  'Seventeen', 'Eighteen', 'Nineteen'
+];
+
+const tens = [
+  '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+];
+
+function convertLessThanThousand(n: number): string {
+  if (n === 0) return '';
+  if (n < 20) return ones[n];
+  if (n < 100) {
+    return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+  }
+  return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convertLessThanThousand(n % 100) : '');
 }
 
-// English words converter
-const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 
-  'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+export function numberToEnglishWords(amount: number): string {
+  const rounded = Math.round(amount);
+  if (rounded === 0) return 'Rupees Zero Only';
 
-export function numberToEnglishWords(num: number): string {
-  const n = Math.floor(Math.abs(num));
-  if (n === 0) return 'Zero Taka Only';
-
-  function convertLessThousand(val: number): string {
-    if (val === 0) return '';
-    if (val < 20) return a[val] + ' ';
-    if (val < 100) return b[Math.floor(val / 10)] + (val % 10 !== 0 ? '-' + a[val % 10] : '') + ' ';
-    return a[Math.floor(val / 100)] + ' Hundred ' + convertLessThousand(val % 100);
-  }
+  let n = Math.abs(rounded);
+  let str = '';
 
   const crore = Math.floor(n / 10000000);
-  const lakh = Math.floor((n % 10000000) / 100000);
-  const thousand = Math.floor((n % 100000) / 1000);
-  const remainder = n % 1000;
+  n %= 10000000;
 
-  let words = '';
+  const lakh = Math.floor(n / 100000);
+  n %= 100000;
+
+  const thousand = Math.floor(n / 1000);
+  n %= 1000;
+
+  const remainder = n;
+
   if (crore > 0) {
-    words += convertLessThousand(crore) + 'Crore ';
+    str += convertLessThanThousand(crore) + ' Crore ';
   }
   if (lakh > 0) {
-    words += convertLessThousand(lakh) + 'Lakh ';
+    str += convertLessThanThousand(lakh) + ' Lakh ';
   }
   if (thousand > 0) {
-    words += convertLessThousand(thousand) + 'Thousand ';
+    str += convertLessThanThousand(thousand) + ' Thousand ';
   }
   if (remainder > 0) {
-    words += convertLessThousand(remainder);
+    str += convertLessThanThousand(remainder) + ' ';
   }
 
-  return words.trim() + ' Taka Only';
+  return `Rupees ${str.trim()} Only`;
 }
