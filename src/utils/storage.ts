@@ -1,20 +1,20 @@
 import { Employee, PayrollCycle, AdvanceLoanRecord, CompanySettings } from '../types/payroll';
 import { calculatePayrollItem } from './calculations';
 
-const EMPLOYEES_KEY = 'fintrack_payroll_employees_v2';
-const CYCLES_KEY = 'fintrack_payroll_cycles_v2';
-const ADVANCES_KEY = 'fintrack_payroll_advances_v2';
-const SETTINGS_KEY = 'fintrack_payroll_settings_v2';
+const EMPLOYEES_KEY = 'eliteedge_payroll_employees_v3';
+const CYCLES_KEY = 'eliteedge_payroll_cycles_v3';
+const ADVANCES_KEY = 'eliteedge_payroll_advances_v3';
+const SETTINGS_KEY = 'eliteedge_payroll_settings_v3';
 
 export const initialCompanySettings: CompanySettings = {
-  companyName: 'FinTrack Global Technologies Ltd.',
-  companyBanglaName: 'FinTrack Enterprise Solutions',
-  tagline: 'Corporate Payroll & Enterprise Compensation Platform',
-  address: 'Level 14, Tower One, Financial District, Banani, Dhaka-1213',
-  addressBangla: 'Level 14, Tower One, Financial District, Banani, Dhaka-1213',
-  phone: '+880 1712-345678',
-  email: 'finance.payroll@fintrackcorp.com',
-  website: 'www.fintrackcorp.com',
+  companyName: 'EliteEdge Accounting & Financial Services Ltd.',
+  companyBanglaName: 'EliteEdge Corporate Solutions',
+  tagline: 'Enterprise Corporate Payroll & Compensation Platform',
+  address: 'Suite 1204, Elite Tower, Commercial Business District, Dhaka-1212',
+  addressBangla: 'Suite 1204, Elite Tower, Commercial Business District, Dhaka-1212',
+  phone: '+880 1712-889900',
+  email: 'payroll@eliteedge.com',
+  website: 'www.eliteedge.com',
   currencySymbol: '৳',
   currencyCode: 'BDT',
   defaultWorkingDays: 26,
@@ -33,7 +33,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Lead Software Architect',
     department: 'IT & Software',
     joinDate: '2022-03-15',
-    email: 'ariful.h@fintrackcorp.com',
+    email: 'ariful.h@eliteedge.com',
     phone: '+880 1711-223344',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -57,7 +57,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Head of Global Marketing',
     department: 'Marketing & Sales',
     joinDate: '2021-06-01',
-    email: 'nadia.s@fintrackcorp.com',
+    email: 'nadia.s@eliteedge.com',
     phone: '+880 1819-334455',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -81,7 +81,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Office Admin & Logistics Lead',
     department: 'Operations & Admin',
     joinDate: '2023-01-10',
-    email: 'kamrul.i@fintrackcorp.com',
+    email: 'kamrul.i@eliteedge.com',
     phone: '+880 1912-998877',
     status: 'Active',
     paymentMethod: 'bKash',
@@ -105,7 +105,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Director of Business Operations',
     department: 'Operations & Admin',
     joinDate: '2020-11-01',
-    email: 'tanvir.a@fintrackcorp.com',
+    email: 'tanvir.a@eliteedge.com',
     phone: '+880 1713-556677',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -129,7 +129,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Principal Product Designer',
     department: 'Design & Creative',
     joinDate: '2023-08-15',
-    email: 'farhana.b@fintrackcorp.com',
+    email: 'farhana.b@eliteedge.com',
     phone: '+880 1611-445566',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -153,7 +153,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Senior Financial Analyst',
     department: 'Accounts & Finance',
     joinDate: '2021-01-05',
-    email: 'mahmud.h@fintrackcorp.com',
+    email: 'mahmud.h@eliteedge.com',
     phone: '+880 1715-778899',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -177,7 +177,7 @@ export const initialEmployees: Employee[] = [
     designation: 'Talent Acquisition & HR Lead',
     department: 'Human Resources',
     joinDate: '2022-09-01',
-    email: 'sumaiya.a@fintrackcorp.com',
+    email: 'sumaiya.a@eliteedge.com',
     phone: '+880 1812-337788',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
@@ -201,12 +201,12 @@ export const initialEmployees: Employee[] = [
     designation: 'Customer Operations Lead',
     department: 'Customer Support',
     joinDate: '2023-03-01',
-    email: 'sakib.h@fintrackcorp.com',
+    email: 'sakib.h@eliteedge.com',
     phone: '+880 1511-224466',
     status: 'Active',
     paymentMethod: 'Cash',
     bankName: 'Petty Cash Desk',
-    accountNumber: 'Corporate Cash Counter',
+    accountNumber: 'Corporate Cash Desk',
     accountTitle: 'Sakib Al Hasan',
     branchName: 'HQ Financial Desk',
     basicSalary: 25000,
@@ -300,7 +300,7 @@ export function createInitialPayrollCycle(employees: Employee[]): PayrollCycle {
     createdAt: '2026-08-01',
     verifiedAt: '2026-08-18',
     items,
-    notes: 'August 2026 Corporate Payroll Cycle (Exempt from PF & ESI)'
+    notes: 'August 2026 EliteEdge Corporate Payroll Cycle (Exempt from PF & ESI)'
   };
 }
 

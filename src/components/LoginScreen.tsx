@@ -21,7 +21,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   employees
 }) => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [identifier, setIdentifier] = useState('accountant@fintrack.com');
+  const [identifier, setIdentifier] = useState('accountant@eliteedge.com');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -82,18 +82,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
           {/* Header */}
           <div className="p-8 bg-slate-900 text-white text-center relative">
-            <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-inner">
-              <div className="w-6 h-6 border-2 border-white rounded-sm rotate-45"></div>
+            <div className="w-12 h-12 bg-indigo-600 rounded-xl border border-indigo-400/30 flex items-center justify-center mx-auto mb-3 shadow-lg text-white font-black text-lg">
+              EE
             </div>
-            <h1 className="text-xl font-black tracking-tight">
-              FinTrack Pro
+            <h1 className="text-2xl font-black tracking-tight">
+              EliteEdge Accounting
             </h1>
             <p className="text-xs text-slate-300 mt-1 font-medium">
               {settings.companyName}
             </p>
             <div className="inline-flex items-center gap-1 mt-3 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-[11px] text-emerald-300 font-semibold">
               <ShieldCheck className="w-3 h-3" />
-              <span>Corporate Payroll (PF & ESI Exempt)</span>
+              <span>Universal Enterprise Payroll (No PF/ESI)</span>
             </div>
           </div>
 
@@ -117,7 +117,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                       required
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="accountant@fintrack.com / EMP-101"
+                      placeholder="accountant@eliteedge.com / EMP-101"
                       className="w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50"
                     />
                   </div>
@@ -176,7 +176,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     required
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="name@fintrackcorp.com"
+                    placeholder="name@eliteedge.com"
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900"
                   />
                 </div>
@@ -196,13 +196,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
                 {regRole === 'employee' && (
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Linked Employee ID</label>
+                    <label className="block font-bold text-slate-700 mb-1">Linked Employee Profile</label>
                     <select
                       value={regEmployeeId}
                       onChange={(e) => setRegEmployeeId(e.target.value)}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900"
                     >
-                      <option value="">Select an Employee Profile</option>
+                      <option value="">Select Employee Record</option>
                       {employees.map(emp => (
                         <option key={emp.id} value={emp.id}>
                           {emp.id} - {emp.name} ({emp.designation})

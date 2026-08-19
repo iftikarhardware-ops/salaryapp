@@ -1,14 +1,14 @@
 import { AuthUser } from '../types/auth';
 
-const USERS_KEY = 'fintrack_auth_users_v2';
-const CURRENT_USER_KEY = 'fintrack_auth_current_user_v2';
+const USERS_KEY = 'eliteedge_auth_users_v3';
+const CURRENT_USER_KEY = 'eliteedge_auth_current_user_v3';
 
 export const defaultUsers: AuthUser[] = [
   {
     id: 'USR-01',
     name: 'Rahim Ahmed, FCMA',
     banglaName: 'Rahim Ahmed',
-    email: 'accountant@fintrack.com',
+    email: 'accountant@eliteedge.com',
     role: 'accountant',
     designation: 'Chief Financial Accountant & Payroll Controller',
     password: 'password123'
@@ -17,7 +17,7 @@ export const defaultUsers: AuthUser[] = [
     id: 'USR-02',
     name: 'Ahsan Habib',
     banglaName: 'Ahsan Habib',
-    email: 'director@fintrack.com',
+    email: 'director@eliteedge.com',
     role: 'approver',
     designation: 'Managing Director & CEO',
     password: 'password123'
@@ -26,7 +26,7 @@ export const defaultUsers: AuthUser[] = [
     id: 'USR-03',
     name: 'Ariful Huq',
     banglaName: 'Ariful Huq',
-    email: 'ariful.h@fintrackcorp.com',
+    email: 'ariful.h@eliteedge.com',
     role: 'employee',
     employeeId: 'EMP-101',
     designation: 'Lead Software Architect',
@@ -36,7 +36,7 @@ export const defaultUsers: AuthUser[] = [
     id: 'USR-04',
     name: 'Nadia Sultana',
     banglaName: 'Nadia Sultana',
-    email: 'nadia.s@fintrackcorp.com',
+    email: 'nadia.s@eliteedge.com',
     role: 'employee',
     employeeId: 'EMP-102',
     designation: 'Head of Global Marketing',

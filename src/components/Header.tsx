@@ -52,21 +52,21 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-4">
         {/* Brand & Identity matching Geometric Balance */}
         <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-200">
-            <div className="w-5 h-5 border-2 border-white rounded-sm rotate-45"></div>
+          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md shadow-indigo-200 text-white font-black text-sm tracking-tighter">
+            EE
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-slate-800 leading-none">
-                FinTrack Pro
+              <h1 className="text-xl font-black tracking-tight text-slate-900 leading-none">
+                EliteEdge Accounting
               </h1>
               <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <ShieldCheck className="w-3 h-3 mr-1" />
                 PF & ESI Exempt
               </span>
             </div>
-            <p className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider">
-              {settings.companyName} • Corporate Payroll Management
+            <p className="text-xs font-semibold text-slate-500 mt-1 uppercase tracking-wider">
+              {settings.companyName}
             </p>
           </div>
         </div>
@@ -113,10 +113,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="text-right">
                   <p className="text-xs font-bold text-slate-800">{currentUser.name}</p>
                   <p className="text-[10px] font-semibold text-indigo-600">
-                    {currentCycle?.month} {currentCycle?.year} ({currentUser.role === 'accountant' ? 'Chief Accountant' : currentUser.role === 'approver' ? 'Managing Director' : 'Employee'})
+                    {currentCycle?.month} {currentCycle?.year} ({currentUser.role === 'accountant' ? 'Chief Accountant' : currentUser.role === 'approver' ? 'Managing Director' : 'Employee Portal'})
                   </p>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-slate-100 flex items-center justify-center font-bold text-xs text-indigo-900 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center font-black text-xs text-indigo-900 shadow-xs">
                   {currentUser.name.charAt(0)}
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -124,7 +124,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               {/* Dropdown Menu */}
               {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-60 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-2 text-xs">
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-2 text-xs">
                   <div className="p-2.5 border-b border-slate-100 mb-1 bg-slate-50 rounded-lg">
                     <p className="font-bold text-slate-900">{currentUser.name}</p>
                     <p className="text-[11px] text-slate-500 truncate">{currentUser.email}</p>
@@ -140,7 +140,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="w-full flex items-center gap-2 p-2.5 text-rose-600 hover:bg-rose-50 rounded-lg font-bold transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Sign Out / Switch Account</span>
+                    <span>Sign Out / Switch User</span>
                   </button>
                 </div>
               )}
