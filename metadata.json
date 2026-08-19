@@ -1,0 +1,6 @@
+{
+  "name": "FinTrack Payroll - Corporate Salary Management",
+  "description": "Customizable Employee Salary & Payroll Management System for Accountants (No PF & ESI, customizable allowances & deductions, payslips, bank advise)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
