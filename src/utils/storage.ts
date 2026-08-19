@@ -1,46 +1,46 @@
 import { Employee, PayrollCycle, AdvanceLoanRecord, CompanySettings } from '../types/payroll';
 import { calculatePayrollItem } from './calculations';
 
-const EMPLOYEES_KEY = 'fintrack_payroll_employees_v1';
-const CYCLES_KEY = 'fintrack_payroll_cycles_v1';
-const ADVANCES_KEY = 'fintrack_payroll_advances_v1';
-const SETTINGS_KEY = 'fintrack_payroll_settings_v1';
+const EMPLOYEES_KEY = 'fintrack_payroll_employees_v2';
+const CYCLES_KEY = 'fintrack_payroll_cycles_v2';
+const ADVANCES_KEY = 'fintrack_payroll_advances_v2';
+const SETTINGS_KEY = 'fintrack_payroll_settings_v2';
 
 export const initialCompanySettings: CompanySettings = {
-  companyName: 'FinTrack Corporate Ltd.',
-  companyBanglaName: 'ফিনট্র্যাক কর্পোরেট লিমিটেড',
-  tagline: 'Corporate Payroll & Financial Management',
-  address: 'House 45, Road 11, Banani, Dhaka-1213, Bangladesh',
-  addressBangla: 'বাড়ি ৪৫, রোড ১১, বনানী, ঢাকা-১২১৩, বাংলাদেশ',
+  companyName: 'FinTrack Global Technologies Ltd.',
+  companyBanglaName: 'FinTrack Enterprise Solutions',
+  tagline: 'Corporate Payroll & Enterprise Compensation Platform',
+  address: 'Level 14, Tower One, Financial District, Banani, Dhaka-1213',
+  addressBangla: 'Level 14, Tower One, Financial District, Banani, Dhaka-1213',
   phone: '+880 1712-345678',
-  email: 'accounts@fintrackcorp.com',
+  email: 'finance.payroll@fintrackcorp.com',
   website: 'www.fintrackcorp.com',
   currencySymbol: '৳',
   currencyCode: 'BDT',
   defaultWorkingDays: 26,
-  accountantName: 'রহিম আহমেদ',
-  accountantTitle: 'চীফ একাউন্টেন্ট (Chief Accountant)',
-  approverName: 'আহসান হাবিব',
-  approverTitle: 'ব্যবস্থাপনা পরিচালক (Managing Director)',
-  pfEsiNote: 'এই প্রতিষ্ঠানে কোনো PF (Provident Fund) এবং ESI কর্তন প্রযোজ্য নয়। সকল ভাতা ও কর্তন কোম্পানির নিজস্ব স্যালারি পলিসি অনুযায়ী নির্ধারিত।'
+  accountantName: 'Rahim Ahmed, FCMA',
+  accountantTitle: 'Chief Financial Accountant & Payroll Controller',
+  approverName: 'Ahsan Habib',
+  approverTitle: 'Managing Director & Chief Executive Officer',
+  pfEsiNote: 'Strict Non-Contributory Payroll Structure: This organization does not apply statutory Provident Fund (PF) or Employee State Insurance (ESI) deductions. All compensation and discretionary deductions are governed by company employment agreement.'
 };
 
 export const initialEmployees: Employee[] = [
   {
     id: 'EMP-101',
     name: 'Ariful Huq',
-    banglaName: 'আরিফুল হক',
-    designation: 'Senior Software Engineer',
+    banglaName: 'Ariful Huq',
+    designation: 'Lead Software Architect',
     department: 'IT & Software',
     joinDate: '2022-03-15',
     email: 'ariful.h@fintrackcorp.com',
     phone: '+880 1711-223344',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
-    bankName: 'BRAC Bank Ltd.',
+    bankName: 'BRAC Bank PLC',
     accountNumber: '1501203498120001',
     accountTitle: 'Ariful Huq',
-    branchName: 'Gulshan Branch',
+    branchName: 'Corporate Gulshan Branch',
     routingNumber: '060261354',
     basicSalary: 45000,
     houseRentAllowance: 3000,
@@ -53,8 +53,8 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-102',
     name: 'Nadia Sultana',
-    banglaName: 'নাদিয়া সুলতানা',
-    designation: 'Marketing Lead',
+    banglaName: 'Nadia Sultana',
+    designation: 'Head of Global Marketing',
     department: 'Marketing & Sales',
     joinDate: '2021-06-01',
     email: 'nadia.s@fintrackcorp.com',
@@ -64,7 +64,7 @@ export const initialEmployees: Employee[] = [
     bankName: 'City Bank PLC',
     accountNumber: '1102948576001',
     accountTitle: 'Nadia Sultana',
-    branchName: 'Banani Branch',
+    branchName: 'Banani Commercial Branch',
     routingNumber: '225261489',
     basicSalary: 38500,
     houseRentAllowance: 4000,
@@ -77,18 +77,18 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-103',
     name: 'Kamrul Islam',
-    banglaName: 'কামরুল ইসলাম',
-    designation: 'Office Admin & Logistics',
+    banglaName: 'Kamrul Islam',
+    designation: 'Office Admin & Logistics Lead',
     department: 'Operations & Admin',
     joinDate: '2023-01-10',
     email: 'kamrul.i@fintrackcorp.com',
     phone: '+880 1912-998877',
     status: 'Active',
     paymentMethod: 'bKash',
-    bankName: 'bKash Merchant/Personal',
+    bankName: 'bKash Corporate Merchant',
     accountNumber: '01912998877',
     accountTitle: 'Kamrul Islam',
-    branchName: 'MFS Wallet',
+    branchName: 'Corporate MFS Gateway',
     mfsNumber: '01912998877',
     basicSalary: 22000,
     houseRentAllowance: 1500,
@@ -101,18 +101,18 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-104',
     name: 'Tanvir Ahmed',
-    banglaName: 'তানভীর আহমেদ',
-    designation: 'Operations Manager',
+    banglaName: 'Tanvir Ahmed',
+    designation: 'Director of Business Operations',
     department: 'Operations & Admin',
     joinDate: '2020-11-01',
     email: 'tanvir.a@fintrackcorp.com',
     phone: '+880 1713-556677',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
-    bankName: 'Dutch-Bangla Bank Ltd.',
+    bankName: 'Dutch-Bangla Bank PLC',
     accountNumber: '11612000984321',
     accountTitle: 'Tanvir Ahmed',
-    branchName: 'Mohakhali Branch',
+    branchName: 'Mohakhali Corporate Branch',
     routingNumber: '090263421',
     basicSalary: 55000,
     houseRentAllowance: 6000,
@@ -125,8 +125,8 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-105',
     name: 'Farhana Boby',
-    banglaName: 'ফারহানা ববি',
-    designation: 'Junior UI/UX Designer',
+    banglaName: 'Farhana Boby',
+    designation: 'Principal Product Designer',
     department: 'Design & Creative',
     joinDate: '2023-08-15',
     email: 'farhana.b@fintrackcorp.com',
@@ -136,7 +136,7 @@ export const initialEmployees: Employee[] = [
     bankName: 'Eastern Bank PLC',
     accountNumber: '1041050098765',
     accountTitle: 'Farhana Boby',
-    branchName: 'Uttara Branch',
+    branchName: 'Uttara North Branch',
     routingNumber: '095262118',
     basicSalary: 28000,
     houseRentAllowance: 1000,
@@ -149,8 +149,8 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-106',
     name: 'Mahmudul Hasan',
-    banglaName: 'মাহমুদুল হাসান',
-    designation: 'Senior Accountant',
+    banglaName: 'Mahmudul Hasan',
+    designation: 'Senior Financial Analyst',
     department: 'Accounts & Finance',
     joinDate: '2021-01-05',
     email: 'mahmud.h@fintrackcorp.com',
@@ -173,18 +173,18 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-107',
     name: 'Sumaiya Akter',
-    banglaName: 'সুমাইয়া আক্তার',
-    designation: 'HR Executive',
+    banglaName: 'Sumaiya Akter',
+    designation: 'Talent Acquisition & HR Lead',
     department: 'Human Resources',
     joinDate: '2022-09-01',
     email: 'sumaiya.a@fintrackcorp.com',
     phone: '+880 1812-337788',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
-    bankName: 'BRAC Bank Ltd.',
+    bankName: 'BRAC Bank PLC',
     accountNumber: '1501205566778899',
     accountTitle: 'Sumaiya Akter',
-    branchName: 'Mirpur Branch',
+    branchName: 'Mirpur DOHS Branch',
     routingNumber: '060261992',
     basicSalary: 30000,
     houseRentAllowance: 2500,
@@ -197,18 +197,18 @@ export const initialEmployees: Employee[] = [
   {
     id: 'EMP-108',
     name: 'Sakib Al Hasan',
-    banglaName: 'সাকিব আল হাসান',
-    designation: 'Customer Support Lead',
+    banglaName: 'Sakib Al Hasan',
+    designation: 'Customer Operations Lead',
     department: 'Customer Support',
     joinDate: '2023-03-01',
     email: 'sakib.h@fintrackcorp.com',
     phone: '+880 1511-224466',
     status: 'Active',
     paymentMethod: 'Cash',
-    bankName: 'Cash on Hand',
-    accountNumber: 'Cash Disbursement',
+    bankName: 'Petty Cash Desk',
+    accountNumber: 'Corporate Cash Counter',
     accountTitle: 'Sakib Al Hasan',
-    branchName: 'Head Office Cash Counter',
+    branchName: 'HQ Financial Desk',
     basicSalary: 25000,
     houseRentAllowance: 2000,
     medicalAllowance: 1000,
@@ -229,7 +229,7 @@ export const initialAdvanceLoans: AdvanceLoanRecord[] = [
     monthlyDeduction: 1200,
     totalDeducted: 1200,
     remainingBalance: 8800,
-    reason: 'জরুরি পারিবারিক প্রয়োজন (Emergency medical)',
+    reason: 'Emergency Medical & Family Advance',
     status: 'Active'
   },
   {
@@ -241,7 +241,7 @@ export const initialAdvanceLoans: AdvanceLoanRecord[] = [
     monthlyDeduction: 500,
     totalDeducted: 500,
     remainingBalance: 2500,
-    reason: 'বাড়ি ভাড়া অ্যাডভান্স (House rent advance)',
+    reason: 'Housing Relocation Advance',
     status: 'Active'
   }
 ];
@@ -256,32 +256,20 @@ export function createInitialPayrollCycle(employees: Employee[]): PayrollCycle {
     let otHours = 0;
 
     if (emp.id === 'EMP-101') {
-      // Ariful Huq (Matches design theme: Net 50,300)
       absent = 0;
       lateFine = 200;
-      bonus = 0;
-      otHours = 0;
     } else if (emp.id === 'EMP-102') {
-      // Nadia Sultana (Matches design theme: Net 46,500)
       absent = 0;
       lateFine = 0;
-      bonus = 0;
-      otHours = 0;
     } else if (emp.id === 'EMP-103') {
-      // Kamrul Islam (Net 24,700)
       absent = 0;
       advanceDed = 500;
-      otHours = 0;
     } else if (emp.id === 'EMP-104') {
-      // Tanvir Ahmed (Net 66,300)
       absent = 0;
       advanceDed = 1200;
-      otHours = 0;
     } else if (emp.id === 'EMP-105') {
-      // Farhana Boby (Net 29,900)
       absent = 0;
       lateFine = 100;
-      otHours = 0;
     }
 
     return calculatePayrollItem(
@@ -305,18 +293,17 @@ export function createInitialPayrollCycle(employees: Employee[]): PayrollCycle {
   return {
     id: '2026-08',
     month: 'August',
-    banglaMonth: 'আগস্ট',
+    banglaMonth: 'August',
     year: 2026,
     status: 'Verified',
     workingDays,
     createdAt: '2026-08-01',
     verifiedAt: '2026-08-18',
     items,
-    notes: 'আগস্ট ২০২৬ মাসের রেগুলার স্যালারি শিট। কোনো PF ও ESI অন্তর্ভুক্ত নয়।'
+    notes: 'August 2026 Corporate Payroll Cycle (Exempt from PF & ESI)'
   };
 }
 
-// Storage helpers
 export function loadEmployees(): Employee[] {
   try {
     const raw = localStorage.getItem(EMPLOYEES_KEY);

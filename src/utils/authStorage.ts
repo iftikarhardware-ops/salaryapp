@@ -1,45 +1,45 @@
 import { AuthUser } from '../types/auth';
 
-const USERS_KEY = 'fintrack_auth_users_v1';
-const CURRENT_USER_KEY = 'fintrack_auth_current_user_v1';
+const USERS_KEY = 'fintrack_auth_users_v2';
+const CURRENT_USER_KEY = 'fintrack_auth_current_user_v2';
 
 export const defaultUsers: AuthUser[] = [
   {
     id: 'USR-01',
-    name: 'Rahim Ahmed',
-    banglaName: 'রহিম আহমেদ',
+    name: 'Rahim Ahmed, FCMA',
+    banglaName: 'Rahim Ahmed',
     email: 'accountant@fintrack.com',
     role: 'accountant',
-    designation: 'Chief Accountant (চীফ একাউন্টেন্ট)',
+    designation: 'Chief Financial Accountant & Payroll Controller',
     password: 'password123'
   },
   {
     id: 'USR-02',
     name: 'Ahsan Habib',
-    banglaName: 'আহসান হাবিব',
+    banglaName: 'Ahsan Habib',
     email: 'director@fintrack.com',
     role: 'approver',
-    designation: 'Managing Director (ব্যবস্থাপনা পরিচালক)',
+    designation: 'Managing Director & CEO',
     password: 'password123'
   },
   {
     id: 'USR-03',
     name: 'Ariful Huq',
-    banglaName: 'আরিফুল হক',
+    banglaName: 'Ariful Huq',
     email: 'ariful.h@fintrackcorp.com',
     role: 'employee',
     employeeId: 'EMP-101',
-    designation: 'Senior Software Engineer',
+    designation: 'Lead Software Architect',
     password: 'password123'
   },
   {
     id: 'USR-04',
     name: 'Nadia Sultana',
-    banglaName: 'নাদিয়া সুলতানা',
+    banglaName: 'Nadia Sultana',
     email: 'nadia.s@fintrackcorp.com',
     role: 'employee',
     employeeId: 'EMP-102',
-    designation: 'Marketing Lead',
+    designation: 'Head of Global Marketing',
     password: 'password123'
   }
 ];
@@ -70,7 +70,6 @@ export function loadCurrentUser(): AuthUser | null {
   } catch (e) {
     console.error('Failed to load current user', e);
   }
-  // Default to Rahim Ahmed (Accountant) logged in so accountant immediately has access or can switch
   return defaultUsers[0];
 }
 

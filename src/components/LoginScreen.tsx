@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ShieldCheck, UserCheck, KeyRound, ArrowRight, Building2, Eye, EyeOff, User } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, ArrowRight, KeyRound, Eye, EyeOff, Building2 } from 'lucide-react';
 import { AuthUser, UserRole } from '../types/auth';
 import { CompanySettings, Employee } from '../types/payroll';
 
@@ -8,8 +8,8 @@ interface LoginScreenProps {
   onLogin: (user: AuthUser) => void;
   onRegister: (newUser: AuthUser) => void;
   settings: CompanySettings;
-  isBangla: boolean;
-  setIsBangla: (val: boolean) => void;
+  isBangla?: boolean;
+  setIsBangla?: (val: boolean) => void;
   employees: Employee[];
 }
 
@@ -18,8 +18,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   onLogin,
   onRegister,
   settings,
-  isBangla,
-  setIsBangla,
   employees
 }) => {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -30,7 +28,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
   // Register Form State
   const [regName, setRegName] = useState('');
-  const [regBanglaName, setRegBanglaName] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regRole, setRegRole] = useState<UserRole>('accountant');
@@ -40,7 +37,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     e.preventDefault();
     setErrorMsg('');
 
-    // Match by email or employeeId
     const foundUser = users.find(u => 
       (u.email.toLowerCase() === identifier.toLowerCase().trim() || 
        (u.employeeId && u.employeeId.toLowerCase() === identifier.toLowerCase().trim())) &&
@@ -50,7 +46,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     if (foundUser) {
       onLogin(foundUser);
     } else {
-      setErrorMsg(isBangla ? 'ভুল ইমেইল/এমপ্লয়ি আইডি অথবা পাসওয়ার্ড!' : 'Invalid Email/Employee ID or Password!');
+      setErrorMsg('Invalid email/employee ID or password.');
     }
   };
 
@@ -61,17 +57,17 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!regName || !regEmail || !regPassword) {
-      setErrorMsg(isBangla ? 'সকল তথ্য পূরণ করুন।' : 'Please fill all required fields.');
+      setErrorMsg('Please complete all required fields.');
       return;
     }
 
     const newUser: AuthUser = {
       id: `USR-${Date.now().toString().slice(-4)}`,
       name: regName,
-      banglaName: regBanglaName || regName,
+      banglaName: regName,
       email: regEmail,
       role: regRole,
-      designation: regRole === 'accountant' ? 'Accountant' : regRole === 'approver' ? 'Director' : 'Staff Employee',
+      designation: regRole === 'accountant' ? 'Financial Accountant' : regRole === 'approver' ? 'Executive Director' : 'Corporate Staff',
       employeeId: regRole === 'employee' ? regEmployeeId : undefined,
       password: regPassword
     };
@@ -82,34 +78,22 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4 selection:bg-indigo-500 selection:text-white">
-      {/* Language Switch floating top-right */}
-      <div className="absolute top-6 right-6">
-        <button
-          onClick={() => setIsBangla(!isBangla)}
-          className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white shadow-xs text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
-        >
-          <span className={isBangla ? 'text-indigo-600 font-black' : 'text-slate-400'}>বাংলা</span>
-          <span className="text-slate-300">/</span>
-          <span className={!isBangla ? 'text-indigo-600 font-black' : 'text-slate-400'}>English</span>
-        </button>
-      </div>
-
       <div className="w-full max-w-md">
-        {/* Card Header matching Geometric Balance */}
         <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-8 bg-indigo-900 text-white text-center relative">
+          {/* Header */}
+          <div className="p-8 bg-slate-900 text-white text-center relative">
             <div className="w-12 h-12 bg-white/10 rounded-xl border border-white/20 flex items-center justify-center mx-auto mb-3 shadow-inner">
               <div className="w-6 h-6 border-2 border-white rounded-sm rotate-45"></div>
             </div>
             <h1 className="text-xl font-black tracking-tight">
-              {isBangla ? 'ফিনট্র্যাক পে-রোল সিস্টেম' : 'FinTrack Payroll System'}
+              FinTrack Pro
             </h1>
-            <p className="text-xs text-indigo-200 mt-1 font-medium">
-              {settings.companyBanglaName || settings.companyName}
+            <p className="text-xs text-slate-300 mt-1 font-medium">
+              {settings.companyName}
             </p>
             <div className="inline-flex items-center gap-1 mt-3 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-[11px] text-emerald-300 font-semibold">
               <ShieldCheck className="w-3 h-3" />
-              <span>{isBangla ? 'PF ও ESI মুক্ত কর্পোরেট স্যালারি' : 'No PF/ESI Applied'}</span>
+              <span>Corporate Payroll (PF & ESI Exempt)</span>
             </div>
           </div>
 
@@ -124,7 +108,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'ইমেইল এড্রেস অথবা এমপ্লয়ি আইডি' : 'Email Address or Employee ID'}
+                    Corporate Email or Employee ID
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -141,7 +125,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'পাসওয়ার্ড' : 'Password'}
+                    Security Password
                   </label>
                   <div className="relative">
                     <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -165,18 +149,16 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-md shadow-indigo-200 transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-sm transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <span>{isBangla ? 'লগইন করুন' : 'Sign In'}</span>
+                  <span>Sign In to Dashboard</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
             ) : (
               <form onSubmit={handleRegisterSubmit} className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'পূর্ণ নাম (Full Name)*' : 'Full Name*'}
-                  </label>
+                  <label className="block font-bold text-slate-700 mb-1">Full Legal Name*</label>
                   <input
                     type="text"
                     required
@@ -188,58 +170,39 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'বাংলায় নাম' : 'Bangla Name'}
-                  </label>
-                  <input
-                    type="text"
-                    value={regBanglaName}
-                    onChange={(e) => setRegBanglaName(e.target.value)}
-                    placeholder="যেমন: রহিম আহমেদ"
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'ইমেইল*' : 'Email*'}
-                  </label>
+                  <label className="block font-bold text-slate-700 mb-1">Email Address*</label>
                   <input
                     type="email"
                     required
                     value={regEmail}
                     onChange={(e) => setRegEmail(e.target.value)}
-                    placeholder="name@company.com"
+                    placeholder="name@fintrackcorp.com"
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'ইউজার রোল (User Role)*' : 'User Role*'}
-                  </label>
+                  <label className="block font-bold text-slate-700 mb-1">System Role*</label>
                   <select
                     value={regRole}
                     onChange={(e) => setRegRole(e.target.value as UserRole)}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900 font-semibold"
                   >
-                    <option value="accountant">{isBangla ? 'হিসাবরক্ষক (Accountant)' : 'Accountant'}</option>
-                    <option value="approver">{isBangla ? 'ব্যবস্থাপনা পরিচালক (Approver / MD)' : 'Approver / Director'}</option>
-                    <option value="employee">{isBangla ? 'এমপ্লয়ি (Employee Portal)' : 'Employee Portal'}</option>
+                    <option value="accountant">Financial Accountant / Payroll Officer</option>
+                    <option value="approver">Executive Approver / Managing Director</option>
+                    <option value="employee">Staff Employee (Self-Service Portal)</option>
                   </select>
                 </div>
 
                 {regRole === 'employee' && (
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">
-                      {isBangla ? 'লিংকড এমপ্লয়ি আইডি' : 'Linked Employee ID'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Linked Employee ID</label>
                     <select
                       value={regEmployeeId}
                       onChange={(e) => setRegEmployeeId(e.target.value)}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900"
                     >
-                      <option value="">{isBangla ? 'এমপ্লয়ি নির্বাচন করুন' : 'Select Employee'}</option>
+                      <option value="">Select an Employee Profile</option>
                       {employees.map(emp => (
                         <option key={emp.id} value={emp.id}>
                           {emp.id} - {emp.name} ({emp.designation})
@@ -250,9 +213,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 )}
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    {isBangla ? 'পাসওয়ার্ড নির্ধারণ করুন*' : 'Set Password*'}
-                  </label>
+                  <label className="block font-bold text-slate-700 mb-1">Set Password*</label>
                   <input
                     type="password"
                     required
@@ -265,17 +226,17 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-md shadow-indigo-200 transition-colors"
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-sm transition-colors"
                 >
-                  {isBangla ? 'অ্যাকাউন্ট তৈরি করুন' : 'Create Account & Sign In'}
+                  Create User & Sign In
                 </button>
               </form>
             )}
 
-            {/* Quick Switch / 1-Click Demo Logins */}
+            {/* Quick 1-Click Demo Accounts */}
             <div className="mt-6 pt-6 border-t border-slate-200">
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">
-                {isBangla ? '১-ক্লিকে টেস্ট লগইন করুন (Demo Accounts)' : '1-Click Quick Demo Login'}
+                1-Click Quick Demo Login
               </p>
               
               <div className="grid grid-cols-3 gap-2">
@@ -286,12 +247,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     className="p-2 border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 rounded-lg text-left transition-all group"
                   >
                     <span className="block text-[11px] font-bold text-slate-800 group-hover:text-indigo-700 truncate">
-                      {u.banglaName || u.name}
+                      {u.name}
                     </span>
                     <span className="block text-[10px] text-slate-500 capitalize">
-                      {u.role === 'accountant' ? (isBangla ? 'একাউন্টেন্ট' : 'Accountant') :
-                       u.role === 'approver' ? (isBangla ? 'পরিচালক' : 'Director') :
-                       (isBangla ? 'এমপ্লয়ি' : 'Employee')}
+                      {u.role === 'accountant' ? 'Accountant' :
+                       u.role === 'approver' ? 'Director' : 'Employee'}
                     </span>
                   </button>
                 ))}
@@ -309,8 +269,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 className="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
               >
                 {isRegistering
-                  ? (isBangla ? '← আগের লগইন স্ক্রিনে ফিরে যান' : '← Back to Login')
-                  : (isBangla ? '+ নতুন ইউজার রেজিস্ট্রেশন করুন' : '+ Register New User Account')}
+                  ? '← Back to Login'
+                  : '+ Register New User Account'}
               </button>
             </div>
           </div>

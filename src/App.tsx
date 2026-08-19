@@ -59,7 +59,6 @@ export default function App() {
   
   // UI States
   const [activeTab, setActiveTab] = useState<string>('payroll');
-  const [isBangla, setIsBangla] = useState<boolean>(true);
   const [activePayslipItem, setActivePayslipItem] = useState<PayrollItem | null>(null);
   const [activePayslipCycle, setActivePayslipCycle] = useState<PayrollCycle | null>(null);
   const [isBankAdviceOpen, setIsBankAdviceOpen] = useState<boolean>(false);
@@ -121,7 +120,6 @@ export default function App() {
     }
     setEmployees(nextEmployees);
 
-    // Also update existing cycles for that employee's name/details
     const updatedCycles = cycles.map(cycle => ({
       ...cycle,
       items: cycle.items.map(item => {
@@ -129,7 +127,7 @@ export default function App() {
           return {
             ...item,
             employeeName: emp.name,
-            employeeBanglaName: emp.banglaName || emp.name,
+            employeeBanglaName: emp.name,
             designation: emp.designation,
             department: emp.department,
             paymentMethod: emp.paymentMethod,
@@ -214,8 +212,6 @@ export default function App() {
         onLogin={handleLogin}
         onRegister={handleRegister}
         settings={settings}
-        isBangla={isBangla}
-        setIsBangla={setIsBangla}
         employees={employees}
       />
     );
@@ -236,16 +232,13 @@ export default function App() {
         selectedCycleId={selectedCycleId}
         onSelectCycle={(id) => setSelectedCycleId(id)}
         onOpenNewCycleModal={() => setIsNewCycleModalOpen(true)}
-        isBangla={isBangla}
-        setIsBangla={setIsBangla}
         currentUser={currentUser}
         onLogout={handleLogout}
-        onSwitchUser={() => handleLogout()}
       />
 
       {/* Main Container */}
       <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto space-y-6">
-        {/* EMPLOYEE PORTAL VIEW */}
+        {/* EMPLOYEE SELF-SERVICE PORTAL */}
         {isEmployeeRole ? (
           <EmployeePortal
             currentUser={currentUser}
@@ -253,14 +246,13 @@ export default function App() {
             cycles={cycles}
             advances={advances}
             settings={settings}
-            isBangla={isBangla}
             onOpenPayslip={(item, cycle) => {
               setActivePayslipItem(item);
               setActivePayslipCycle(cycle);
             }}
           />
         ) : (
-          /* ACCOUNTANT & MANAGEMENT VIEW */
+          /* ACCOUNTANT & MANAGEMENT DASHBOARD */
           <>
             {/* Metric Cards Banner (shown in payroll, employees, and sheet views) */}
             {['payroll', 'employees', 'sheet'].includes(activeTab) && (
@@ -271,7 +263,6 @@ export default function App() {
                 netPayout={cycleTotals.totalNetPayable}
                 currencySymbol={settings.currencySymbol}
                 status={currentCycle?.status || 'Draft'}
-                isBangla={isBangla}
                 bankTotal={cycleTotals.bankTotal}
                 cashTotal={cycleTotals.cashTotal}
                 mfsTotal={cycleTotals.mfsTotal}
@@ -285,7 +276,6 @@ export default function App() {
                 cycle={currentCycle}
                 employees={employees}
                 settings={settings}
-                isBangla={isBangla}
                 onUpdateCycle={handleUpdateCycle}
                 onOpenPayslip={(item) => {
                   setActivePayslipItem(item);
@@ -303,7 +293,6 @@ export default function App() {
                 onSaveEmployee={handleSaveEmployee}
                 onDeleteEmployee={handleDeleteEmployee}
                 settings={settings}
-                isBangla={isBangla}
               />
             )}
 
@@ -312,7 +301,6 @@ export default function App() {
               <MasterSalarySheet
                 cycle={currentCycle}
                 settings={settings}
-                isBangla={isBangla}
                 onBackToPayroll={() => setActiveTab('payroll')}
               />
             )}
@@ -323,7 +311,6 @@ export default function App() {
                 records={advances}
                 employees={employees}
                 settings={settings}
-                isBangla={isBangla}
                 onSaveRecord={handleSaveAdvanceRecord}
                 onDeleteRecord={handleDeleteAdvanceRecord}
               />
@@ -331,27 +318,27 @@ export default function App() {
 
             {/* Tab 5: Bank Advice Statement */}
             {activeTab === 'bank' && currentCycle && (
-              <div className="bg-white p-6 border border-slate-200 rounded-xl shadow-sm space-y-4">
+              <div className="bg-white p-6 border border-slate-200 rounded-xl shadow-xs space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-base font-bold text-slate-800">
-                      {isBangla ? 'ব্যাংক ট্রান্সফার স্টেটমেন্ট ও অ্যাডভাইস' : 'Bank Transfer Advice Statement'}
+                      Bank Salary Transfer Advice & Corporate Schedule
                     </h2>
                     <p className="text-xs text-slate-500">
-                      {isBangla ? 'ব্যাংকের মাধ্যমে সরাসরি স্যালারি বিতরণের অফিসিয়াল লেটার ও শিট' : 'Official bank schedule for salary disbursal'}
+                      Official bank disbursement instruction letter & schedule for branch manager submission.
                     </p>
                   </div>
                   <button
                     onClick={() => setIsBankAdviceOpen(true)}
                     className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm"
                   >
-                    {isBangla ? 'অফিসিয়াল লেটার ভিউ ও প্রিন্ট' : 'Open Bank Letter'}
+                    Open Official Bank Letter
                   </button>
                 </div>
                 
                 <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs flex items-center justify-between">
                   <span className="font-semibold text-slate-700">
-                    {isBangla ? `মোট ব্যাংক প্রাপক: ${cycleTotals.totalEmployees} জনের মধ্যে ব্যাংক ট্রান্সফার তালিকা প্রস্তুত` : `Bank schedule ready for disbursement`}
+                    Beneficiary Schedule: {currentCycle.items.filter(i => i.paymentMethod === 'Bank Transfer').length} bank accounts ready for electronic transfer
                   </span>
                   <span className="font-mono font-bold text-indigo-700 text-sm">
                     {settings.currencySymbol} {cycleTotals.bankTotal.toLocaleString()}
@@ -365,7 +352,6 @@ export default function App() {
               <SettingsModal
                 settings={settings}
                 onSaveSettings={(newSettings) => setSettings(newSettings)}
-                isBangla={isBangla}
                 onResetAllData={handleResetAllData}
                 employees={employees}
                 cycles={cycles}
@@ -383,7 +369,6 @@ export default function App() {
           item={activePayslipItem}
           cycle={activePayslipCycle || currentCycle}
           settings={settings}
-          isBangla={isBangla}
           onClose={() => {
             setActivePayslipItem(null);
             setActivePayslipCycle(null);
@@ -396,7 +381,6 @@ export default function App() {
         <BankAdviceModal
           cycle={currentCycle}
           settings={settings}
-          isBangla={isBangla}
           onClose={() => setIsBankAdviceOpen(false)}
         />
       )}
@@ -408,7 +392,6 @@ export default function App() {
           advances={advances}
           onClose={() => setIsNewCycleModalOpen(false)}
           onCreateCycle={handleCreateCycle}
-          isBangla={isBangla}
           defaultDays={settings.defaultWorkingDays}
         />
       )}

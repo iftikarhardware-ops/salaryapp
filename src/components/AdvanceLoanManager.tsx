@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Plus, HandCoins, CheckCircle2, Clock, Trash2, Search, DollarSign } from 'lucide-react';
+import { Plus, HandCoins, CheckCircle2, Clock, Trash2, Search, DollarSign, X } from 'lucide-react';
 import { AdvanceLoanRecord, Employee, CompanySettings } from '../types/payroll';
-import { formatCurrency, toBanglaNumber } from '../utils/numberToWords';
+import { formatCurrency } from '../utils/numberToWords';
 
 interface AdvanceLoanManagerProps {
   records: AdvanceLoanRecord[];
   employees: Employee[];
   settings: CompanySettings;
-  isBangla: boolean;
+  isBangla?: boolean;
   onSaveRecord: (record: AdvanceLoanRecord) => void;
   onDeleteRecord: (id: string) => void;
 }
@@ -16,7 +16,6 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
   records,
   employees,
   settings,
-  isBangla,
   onSaveRecord,
   onDeleteRecord
 }) => {
@@ -41,7 +40,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
     setFormData({
       id: `ADV-${Date.now().toString().slice(-4)}`,
       employeeId: defaultEmp?.id || '',
-      employeeName: defaultEmp ? `${defaultEmp.name} (${defaultEmp.banglaName})` : '',
+      employeeName: defaultEmp?.name || '',
       amount: 5000,
       disbursedDate: new Date().toISOString().split('T')[0],
       monthlyDeduction: 1000,
@@ -59,7 +58,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
       setFormData(prev => ({
         ...prev,
         employeeId: emp.id,
-        employeeName: `${emp.name} (${emp.banglaName})`
+        employeeName: emp.name
       }));
     }
   };
@@ -80,7 +79,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
       monthlyDeduction: monthly,
       totalDeducted: deducted,
       remainingBalance: remaining,
-      reason: formData.reason || 'Personal advance',
+      reason: formData.reason || 'General emergency advance',
       status: remaining <= 0 ? 'Completed' : 'Active'
     };
 
@@ -102,50 +101,50 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
     <div className="space-y-6">
       {/* 3 Metric Cards for Advances */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
+        <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-xs">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-            {isBangla ? 'মোট প্রদত্ত অগ্রিম / লোন' : 'Total Advance Disbursed'}
+            Total Disbursed Advances
           </p>
           <p className="text-2xl font-bold text-slate-800 font-mono">
-            {formatCurrency(totalAdvanceDisbursed, settings.currencySymbol, isBangla)}
+            {formatCurrency(totalAdvanceDisbursed, settings.currencySymbol)}
           </p>
           <p className="text-xs text-slate-500 mt-1">
-            {isBangla ? `${toBanglaNumber(records.length)} টি এন্ট্রি` : `${records.length} total entries`}
+            {records.length} total advances recorded
           </p>
         </div>
 
-        <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
+        <div className="bg-white p-5 border border-slate-200 rounded-xl shadow-xs">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-            {isBangla ? 'স্যালারি থেকে মোট কর্তনকৃত (আদায়)' : 'Total Recovered via Salary'}
+            Recovered via Monthly Payroll
           </p>
           <p className="text-2xl font-bold text-emerald-600 font-mono">
-            {formatCurrency(totalRecovered, settings.currencySymbol, isBangla)}
+            {formatCurrency(totalRecovered, settings.currencySymbol)}
           </p>
           <p className="text-xs text-emerald-600 mt-1">
-            {isBangla ? 'মাসিক পে-রোল থেকে সমন্বিত' : 'Adjusted via monthly payroll'}
+            Adjusted through monthly payroll EMI
           </p>
         </div>
 
-        <div className="bg-white p-5 border border-amber-200 bg-amber-50/20 rounded-xl shadow-sm">
+        <div className="bg-white p-5 border border-amber-200 bg-amber-50/20 rounded-xl shadow-xs">
           <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">
-            {isBangla ? 'বর্তমান অবশিষ্ট বকেয়া (Outstanding)' : 'Current Outstanding Balance'}
+            Current Outstanding Balance
           </p>
           <p className="text-2xl font-bold text-amber-700 font-mono">
-            {formatCurrency(totalOutstanding, settings.currencySymbol, isBangla)}
+            {formatCurrency(totalOutstanding, settings.currencySymbol)}
           </p>
           <p className="text-xs text-amber-600 mt-1">
-            {isBangla ? 'ভবিষ্যৎ স্যালারি থেকে কর্তনযোগ্য' : 'To be deducted in upcoming cycles'}
+            To be deducted in upcoming payroll cycles
           </p>
         </div>
       </div>
 
       {/* Action Bar */}
-      <div className="bg-white p-4 border border-slate-200 rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white p-4 border border-slate-200 rounded-xl shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder={isBangla ? 'নাম বা আইডি দিয়ে খুঁজুন...' : 'Search by name or ID...'}
+            placeholder="Search by name, ID or reason..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50"
@@ -154,35 +153,35 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
 
         <button
           onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors w-full md:w-auto justify-center"
+          className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors w-full md:w-auto justify-center"
         >
           <Plus className="w-4 h-4" />
-          {isBangla ? '+ নতুন অগ্রিম / লোন এন্ট্রি' : '+ Add Advance / Loan'}
+          <span>Issue New Salary Advance / Loan</span>
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3">{isBangla ? 'আইডি ও এমপ্লয়ি' : 'Employee'}</th>
-                <th className="px-4 py-3">{isBangla ? 'প্রদানের তারিখ' : 'Disbursed Date'}</th>
-                <th className="px-4 py-3">{isBangla ? 'কারণ / বিবরণ' : 'Reason / Note'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মোট লোন পরিমাণ' : 'Total Amount'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মাসিক কর্তন' : 'Monthly EMI'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মোট কর্তিত' : 'Deducted'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'অবশিষ্ট ব্যালেন্স' : 'Balance'}</th>
-                <th className="px-4 py-3 text-center">{isBangla ? 'স্ট্যাটাস' : 'Status'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'অ্যাকশন' : 'Action'}</th>
+                <th className="px-4 py-3.5">Employee & Ref</th>
+                <th className="px-4 py-3.5">Disbursed Date</th>
+                <th className="px-4 py-3.5">Purpose / Memo</th>
+                <th className="px-4 py-3.5 text-right">Total Advance</th>
+                <th className="px-4 py-3.5 text-right">Monthly EMI</th>
+                <th className="px-4 py-3.5 text-right">Total Recovered</th>
+                <th className="px-4 py-3.5 text-right">Remaining Balance</th>
+                <th className="px-4 py-3.5 text-center">Status</th>
+                <th className="px-4 py-3.5 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredRecords.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-8 text-center text-slate-400">
-                    {isBangla ? 'কোনো অগ্রিম বেতনের রেকর্ড নেই।' : 'No advance records found.'}
+                    No active salary advance records found.
                   </td>
                 </tr>
               ) : (
@@ -195,28 +194,28 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
                     <td className="px-4 py-3 font-mono text-slate-600">{rec.disbursedDate}</td>
                     <td className="px-4 py-3 text-slate-600 max-w-xs truncate">{rec.reason}</td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-slate-900">
-                      {formatCurrency(rec.amount, settings.currencySymbol, isBangla)}
+                      {formatCurrency(rec.amount, settings.currencySymbol)}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-rose-600 font-semibold">
-                      -{formatCurrency(rec.monthlyDeduction, settings.currencySymbol, isBangla)}
+                      -{formatCurrency(rec.monthlyDeduction, settings.currencySymbol)}
                     </td>
                     <td className="px-4 py-3 text-right font-mono text-emerald-600">
-                      {formatCurrency(rec.totalDeducted, settings.currencySymbol, isBangla)}
+                      {formatCurrency(rec.totalDeducted, settings.currencySymbol)}
                     </td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-amber-700">
-                      {formatCurrency(rec.remainingBalance, settings.currencySymbol, isBangla)}
+                      {formatCurrency(rec.remainingBalance, settings.currencySymbol)}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
                         rec.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                       }`}>
-                        {rec.status === 'Completed' ? (isBangla ? 'পরিশোধিত' : 'Completed') : (isBangla ? 'চলমান' : 'Active')}
+                        {rec.status}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => {
-                          if (confirm(isBangla ? 'এই লোন রেকর্ড মুছে ফেলতে চান?' : 'Delete this record?')) {
+                          if (confirm(`Delete advance record ${rec.id}?`)) {
                             onDeleteRecord(rec.id);
                           }
                         }}
@@ -233,31 +232,31 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
         </div>
       </div>
 
-      {/* Add Modal */}
+      {/* Add Advance Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-md overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-800">
-                {isBangla ? 'নতুন অগ্রিম বেতন / লোন অনুমোদন' : 'New Salary Advance / Loan'}
+                Issue Salary Advance / Loan
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 font-bold">✕</button>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  {isBangla ? 'এমপ্লয়ি নির্বাচন করুন*' : 'Select Employee*'}
-                </label>
+                <label className="block font-bold text-slate-700 mb-1">Select Beneficiary Employee*</label>
                 <select
                   required
                   value={formData.employeeId}
                   onChange={(e) => handleEmployeeSelect(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 font-semibold"
                 >
                   {employees.map(e => (
                     <option key={e.id} value={e.id}>
-                      {e.id} - {e.banglaName || e.name} ({e.designation})
+                      {e.id} - {e.name} ({e.designation})
                     </option>
                   ))}
                 </select>
@@ -265,7 +264,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  {isBangla ? 'লোন / অগ্রিম পরিমাণ*' : 'Total Advance Amount*'} ({settings.currencySymbol})
+                  Total Disbursed Amount ({settings.currencySymbol})*
                 </label>
                 <input
                   type="number"
@@ -279,7 +278,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  {isBangla ? 'মাসিক কিস্তি কর্তন (Monthly EMI)*' : 'Monthly EMI Deduction*'} ({settings.currencySymbol})
+                  Monthly Payroll Deduction EMI ({settings.currencySymbol})*
                 </label>
                 <input
                   type="number"
@@ -292,9 +291,7 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  {isBangla ? 'প্রদানের তারিখ' : 'Disbursed Date'}
-                </label>
+                <label className="block font-bold text-slate-700 mb-1">Disbursement Date</label>
                 <input
                   type="date"
                   value={formData.disbursedDate}
@@ -304,14 +301,12 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  {isBangla ? 'লোনের কারণ / নোট' : 'Reason / Notes'}
-                </label>
+                <label className="block font-bold text-slate-700 mb-1">Purpose / Justification</label>
                 <input
                   type="text"
                   value={formData.reason}
                   onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                  placeholder="যেমন: জরুরি পারিবারিক চিকিৎসা"
+                  placeholder="e.g. Emergency Medical & Housing Relocation"
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                 />
               </div>
@@ -322,13 +317,13 @@ export const AdvanceLoanManager: React.FC<AdvanceLoanManagerProps> = ({
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50"
                 >
-                  {isBangla ? 'বাতিল' : 'Cancel'}
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold"
                 >
-                  {isBangla ? 'অনুমোদন করুন' : 'Approve & Save'}
+                  Approve & Record
                 </button>
               </div>
             </form>

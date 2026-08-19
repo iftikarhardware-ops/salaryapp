@@ -8,23 +8,13 @@ interface NewCycleModalProps {
   advances: AdvanceLoanRecord[];
   onClose: () => void;
   onCreateCycle: (newCycle: PayrollCycle) => void;
-  isBangla: boolean;
+  isBangla?: boolean;
   defaultDays: number;
 }
 
 const MONTHS = [
-  { en: 'January', bn: 'জানুয়ারি' },
-  { en: 'February', bn: 'ফেব্রুয়ারি' },
-  { en: 'March', bn: 'মার্চ' },
-  { en: 'April', bn: 'এপ্রিল' },
-  { en: 'May', bn: 'মে' },
-  { en: 'June', bn: 'জুন' },
-  { en: 'July', bn: 'জুলাই' },
-  { en: 'August', bn: 'আগস্ট' },
-  { en: 'September', bn: 'সেপ্টেম্বর' },
-  { en: 'October', bn: 'অক্টোবর' },
-  { en: 'November', bn: 'নভেম্বর' },
-  { en: 'December', bn: 'ডিসেম্বর' }
+  'January', 'February', 'March', 'April', 'May', 'June', 
+  'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 export const NewCycleModal: React.FC<NewCycleModalProps> = ({
@@ -32,44 +22,39 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
   advances,
   onClose,
   onCreateCycle,
-  isBangla,
   defaultDays
 }) => {
   const currentDate = new Date();
   const currentMonthIndex = currentDate.getMonth();
   const nextMonthIndex = (currentMonthIndex + 1) % 12;
 
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[nextMonthIndex].en);
+  const [selectedMonth, setSelectedMonth] = useState(MONTHS[nextMonthIndex]);
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
   const [workingDays, setWorkingDays] = useState(defaultDays || 26);
   const [notes, setNotes] = useState('');
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
-    const monthObj = MONTHS.find(m => m.en === selectedMonth) || MONTHS[0];
-    const cycleId = `${selectedYear}-${String(MONTHS.findIndex(m => m.en === selectedMonth) + 1).padStart(2, '0')}`;
-
-    // Filter only active employees
+    const cycleId = `${selectedYear}-${String(MONTHS.indexOf(selectedMonth) + 1).padStart(2, '0')}`;
     const activeEmployees = employees.filter(e => e.status !== 'Terminated');
 
     const items = activeEmployees.map(emp => {
-      // Check if employee has active advance deduction
       const empAdvance = advances.find(a => a.employeeId === emp.id && a.status === 'Active' && a.remainingBalance > 0);
       const advanceDed = empAdvance ? Math.min(empAdvance.monthlyDeduction, empAdvance.remainingBalance) : 0;
 
       return calculatePayrollItem(
         emp,
         workingDays,
-        workingDays, // default 100% attendance
-        0, // absent
-        0, // leave
-        0, // overtime hours
-        0, // bonus
+        workingDays,
+        0,
+        0,
+        0,
+        0,
         advanceDed,
-        0, // loan
-        0, // late fine
-        0, // tax
-        0, // other
+        0,
+        0,
+        0,
+        0,
         '',
         { isPaid: false }
       );
@@ -78,13 +63,13 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
     const newCycle: PayrollCycle = {
       id: cycleId,
       month: selectedMonth,
-      banglaMonth: monthObj.bn,
+      banglaMonth: selectedMonth,
       year: selectedYear,
       status: 'Draft',
       workingDays,
       createdAt: new Date().toISOString().split('T')[0],
       items,
-      notes: notes || `${monthObj.bn} ${selectedYear} স্যালারি সাইকেল (PF & ESI বাদ দিয়ে)`
+      notes: notes || `${selectedMonth} ${selectedYear} Corporate Payroll Cycle (Non-Contributory No PF/ESI)`
     };
 
     onCreateCycle(newCycle);
@@ -101,10 +86,10 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800">
-                {isBangla ? 'নতুন মাসের স্যালারি সাইকেল তৈরি' : 'Create New Payroll Cycle'}
+                Initiate New Payroll Cycle
               </h3>
               <p className="text-xs text-slate-500">
-                {isBangla ? 'স্বয়ংক্রিয়ভাবে সক্রিয় এমপ্লয়িদের ডাটা লোড হবে' : 'Auto-populates active employees'}
+                Auto-generates draft items for all active employees
               </p>
             </div>
           </div>
@@ -116,7 +101,7 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
         <form onSubmit={handleCreate} className="p-6 space-y-4 text-xs">
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              {isBangla ? 'মাস নির্বাচন করুন*' : 'Select Month*'}
+              Select Month*
             </label>
             <select
               value={selectedMonth}
@@ -124,16 +109,14 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
             >
               {MONTHS.map(m => (
-                <option key={m.en} value={m.en}>
-                  {m.en} ({m.bn})
-                </option>
+                <option key={m} value={m}>{m}</option>
               ))}
             </select>
           </div>
 
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              {isBangla ? 'বছর (Year)*' : 'Year*'}
+              Fiscal Year*
             </label>
             <input
               type="number"
@@ -147,7 +130,7 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
 
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              {isBangla ? 'মাসের মোট কার্যদিবস (Working Days)*' : 'Total Working Days*'}
+              Scheduled Working Days*
             </label>
             <input
               type="number"
@@ -161,7 +144,7 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
 
           <div>
             <label className="block font-bold text-slate-700 mb-1">
-              {isBangla ? 'সাইকেল সংক্রান্ত নোট / বিবরণ' : 'Cycle Notes'}
+              Payroll Memo / Notes
             </label>
             <input
               type="text"
@@ -173,9 +156,7 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
           </div>
 
           <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-[11px] text-indigo-900">
-            {isBangla 
-              ? `মোট ${employees.filter(e => e.status !== 'Terminated').length} জন সক্রিয় এমপ্লয়ির বর্তমান স্যালারি স্ট্রাকচার অনুযায়ী খসড়া পে-রোল তৈরি হবে।` 
-              : `Draft payroll will be generated for ${employees.filter(e => e.status !== 'Terminated').length} active employees.`}
+            A draft payroll register will be created for {employees.filter(e => e.status !== 'Terminated').length} active employees with automatic advance salary EMI adjustments.
           </div>
 
           <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
@@ -184,13 +165,13 @@ export const NewCycleModal: React.FC<NewCycleModalProps> = ({
               onClick={onClose}
               className="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50"
             >
-              {isBangla ? 'বাতিল' : 'Cancel'}
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-md shadow-indigo-200"
+              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-sm"
             >
-              {isBangla ? 'সাইকেল শুরু করুন' : 'Start Payroll'}
+              Initiate Payroll Cycle
             </button>
           </div>
         </form>

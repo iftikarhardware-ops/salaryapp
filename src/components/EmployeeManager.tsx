@@ -1,100 +1,73 @@
 import React, { useState } from 'react';
 import { 
-  Plus, 
+  UserPlus, 
   Search, 
   Edit3, 
   Trash2, 
-  Building2, 
-  Phone, 
-  Mail, 
-  DollarSign, 
   CreditCard, 
-  UserCheck, 
-  UserX,
-  FileText,
-  Download,
-  AlertCircle
+  Building2, 
+  Download, 
+  ShieldCheck, 
+  Check, 
+  X,
+  Smartphone,
+  Landmark,
+  Banknote
 } from 'lucide-react';
-import { Employee, Department, PaymentMethod, CompanySettings } from '../types/payroll';
-import { formatCurrency, toBanglaNumber } from '../utils/numberToWords';
+import { Employee, CompanySettings } from '../types/payroll';
+import { formatCurrency } from '../utils/numberToWords';
 
 interface EmployeeManagerProps {
   employees: Employee[];
   onSaveEmployee: (employee: Employee) => void;
-  onDeleteEmployee: (id: string) => void;
+  onDeleteEmployee: (employeeId: string) => void;
   settings: CompanySettings;
-  isBangla: boolean;
+  isBangla?: boolean;
 }
-
-const DEPARTMENTS: Department[] = [
-  'Accounts & Finance',
-  'IT & Software',
-  'Marketing & Sales',
-  'Human Resources',
-  'Operations & Admin',
-  'Design & Creative',
-  'Customer Support',
-  'Executive / Management'
-];
-
-const PAYMENT_METHODS: PaymentMethod[] = ['Bank Transfer', 'Cash', 'bKash', 'Nagad', 'Rocket'];
 
 export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
   employees,
   onSaveEmployee,
   onDeleteEmployee,
-  settings,
-  isBangla
+  settings
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDept, setSelectedDept] = useState<string>('ALL');
+  const [departmentFilter, setDepartmentFilter] = useState('ALL');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
-  // Form State
   const [formData, setFormData] = useState<Partial<Employee>>({
     id: '',
     name: '',
     banglaName: '',
     designation: '',
-    department: 'Accounts & Finance',
+    department: 'Engineering',
     joinDate: new Date().toISOString().split('T')[0],
     email: '',
     phone: '',
     status: 'Active',
     paymentMethod: 'Bank Transfer',
-    bankName: 'BRAC Bank Ltd.',
+    bankName: 'BRAC Bank PLC',
     accountNumber: '',
     accountTitle: '',
-    branchName: '',
+    branchName: 'Corporate Branch',
     routingNumber: '',
-    mfsNumber: '',
-    basicSalary: 30000,
+    basicSalary: 35000,
     houseRentAllowance: 3000,
     medicalAllowance: 1500,
     conveyanceAllowance: 1000,
     foodAllowance: 0,
     specialAllowance: 0,
-    overtimeHourlyRate: 200
+    overtimeHourlyRate: 250
   });
 
-  const filteredEmployees = employees.filter(emp => {
-    const matchesSearch = 
-      emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.banglaName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      emp.accountNumber.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesDept = selectedDept === 'ALL' || emp.department === selectedDept;
-    return matchesSearch && matchesDept;
-  });
+  const departments = ['Engineering', 'IT & Software', 'Marketing & Sales', 'Accounts & Finance', 'Operations & Admin', 'Human Resources', 'Design & Creative', 'Customer Support'];
 
   const handleOpenAdd = () => {
-    const nextIdNum = employees.length + 101;
     setEditingEmployee(null);
+    const nextId = `EMP-${(100 + employees.length + 1).toString()}`;
     setFormData({
-      id: `EMP-${nextIdNum}`,
+      id: nextId,
       name: '',
       banglaName: '',
       designation: '',
@@ -104,12 +77,11 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
       phone: '',
       status: 'Active',
       paymentMethod: 'Bank Transfer',
-      bankName: 'BRAC Bank Ltd.',
+      bankName: 'BRAC Bank PLC',
       accountNumber: '',
       accountTitle: '',
-      branchName: '',
+      branchName: 'Main Branch',
       routingNumber: '',
-      mfsNumber: '',
       basicSalary: 35000,
       houseRentAllowance: 3000,
       medicalAllowance: 1500,
@@ -127,30 +99,26 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.id) {
-      alert(isBangla ? 'অনুগ্রহ করে এমপ্লয়ি আইডি ও নাম প্রদান করুন।' : 'Please enter Employee ID and Name.');
-      return;
-    }
+    if (!formData.id || !formData.name) return;
 
-    const completeEmployee: Employee = {
-      id: formData.id || `EMP-${Date.now()}`,
-      name: formData.name || '',
-      banglaName: formData.banglaName || formData.name || '',
+    const empToSave: Employee = {
+      id: formData.id,
+      name: formData.name,
+      banglaName: formData.banglaName || formData.name,
       designation: formData.designation || 'Staff',
-      department: (formData.department as Department) || 'Operations & Admin',
+      department: formData.department || 'Operations',
       joinDate: formData.joinDate || new Date().toISOString().split('T')[0],
       email: formData.email || '',
       phone: formData.phone || '',
-      status: formData.status || 'Active',
-      paymentMethod: formData.paymentMethod || 'Bank Transfer',
+      status: (formData.status as any) || 'Active',
+      paymentMethod: (formData.paymentMethod as any) || 'Bank Transfer',
       bankName: formData.bankName || 'N/A',
-      accountNumber: formData.accountNumber || formData.mfsNumber || 'N/A',
-      accountTitle: formData.accountTitle || formData.name || '',
+      accountNumber: formData.accountNumber || 'N/A',
+      accountTitle: formData.accountTitle || formData.name,
       branchName: formData.branchName || '',
       routingNumber: formData.routingNumber || '',
-      mfsNumber: formData.mfsNumber || '',
       basicSalary: Number(formData.basicSalary) || 0,
       houseRentAllowance: Number(formData.houseRentAllowance) || 0,
       medicalAllowance: Number(formData.medicalAllowance) || 0,
@@ -160,214 +128,184 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
       overtimeHourlyRate: Number(formData.overtimeHourlyRate) || 0
     };
 
-    onSaveEmployee(completeEmployee);
+    onSaveEmployee(empToSave);
     setIsModalOpen(false);
   };
 
-  const calculateGross = (data: Partial<Employee>) => {
-    return (
-      (Number(data.basicSalary) || 0) +
-      (Number(data.houseRentAllowance) || 0) +
-      (Number(data.medicalAllowance) || 0) +
-      (Number(data.conveyanceAllowance) || 0) +
-      (Number(data.foodAllowance) || 0) +
-      (Number(data.specialAllowance) || 0)
-    );
-  };
-
-  const handleExportCSV = () => {
-    const headers = ['ID', 'Name', 'Bangla Name', 'Department', 'Designation', 'Basic Salary', 'House Rent', 'Medical', 'Conveyance', 'Gross Salary', 'Payment Method', 'Bank Name', 'Account Number', 'Phone'];
+  const handleDownloadCSV = () => {
+    const headers = ['Employee ID', 'Name', 'Designation', 'Department', 'Join Date', 'Email', 'Phone', 'Payment Mode', 'Bank Name', 'Account Number', 'Basic Salary', 'House Rent', 'Medical', 'Conveyance', 'Total Gross (No PF/ESI)'];
     const rows = employees.map(e => [
       e.id,
       `"${e.name}"`,
-      `"${e.banglaName}"`,
-      `"${e.department}"`,
       `"${e.designation}"`,
+      `"${e.department}"`,
+      e.joinDate,
+      e.email,
+      e.phone,
+      e.paymentMethod,
+      `"${e.bankName}"`,
+      `"${e.accountNumber}"`,
       e.basicSalary,
       e.houseRentAllowance,
       e.medicalAllowance,
       e.conveyanceAllowance,
-      e.basicSalary + e.houseRentAllowance + e.medicalAllowance + e.conveyanceAllowance + e.foodAllowance + e.specialAllowance,
-      e.paymentMethod,
-      `"${e.bankName}"`,
-      `"${e.accountNumber}"`,
-      `"${e.phone}"`
+      e.basicSalary + e.houseRentAllowance + e.medicalAllowance + e.conveyanceAllowance + e.foodAllowance + e.specialAllowance
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `FinTrack_Employee_Salary_Setup_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `Employees_Master_List_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const filteredEmployees = employees.filter(e => {
+    const matchSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.designation.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchDept = departmentFilter === 'ALL' || e.department === departmentFilter;
+    return matchSearch && matchDept;
+  });
+
   return (
     <div className="space-y-6">
-      {/* Top action toolbar */}
-      <div className="bg-white p-4 border border-slate-200 rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      {/* Action and Search Bar */}
+      <div className="bg-white p-4 border border-slate-200 rounded-xl shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3 w-full md:w-auto">
-          {/* Search box */}
-          <div className="relative flex-1 md:w-80">
+          <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder={isBangla ? 'নাম, আইডি, পদবী বা অ্যাকাউন্ট নম্বর খুঁজুন...' : 'Search by name, ID, designation, account...'}
+              placeholder="Search by name, ID, or designation..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50 focus:bg-white transition-colors"
+              className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-slate-50"
             />
           </div>
 
-          {/* Department Filter */}
           <select
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-            aria-label={isBangla ? 'ডিপার্টমেন্ট নির্বাচন করুন' : 'Select Department'}
-            className="border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            value={departmentFilter}
+            onChange={(e) => setDepartmentFilter(e.target.value)}
+            aria-label="Filter by department"
+            className="px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 bg-white font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           >
-            <option value="ALL">{isBangla ? 'সকল ডিপার্টমেন্ট (All)' : 'All Departments'}</option>
-            {DEPARTMENTS.map(d => (
+            <option value="ALL">All Departments</option>
+            {departments.map(d => (
               <option key={d} value={d}>{d}</option>
             ))}
           </select>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
           <button
-            onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors"
+            onClick={handleDownloadCSV}
+            className="flex items-center gap-1 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
-            {isBangla ? 'CSV এক্সপোর্ট' : 'Export CSV'}
+            <span>Export CSV</span>
           </button>
+
           <button
             onClick={handleOpenAdd}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-200 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-colors"
           >
-            <Plus className="w-4 h-4" />
-            {isBangla ? '+ নতুন এমপ্লয়ি যোগ করুন' : '+ Add Employee'}
+            <UserPlus className="w-4 h-4" />
+            <span>Add New Employee</span>
           </button>
         </div>
       </div>
 
-      {/* Employees Grid / Table */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-          <div>
-            <h2 className="text-sm font-bold text-slate-800">
-              {isBangla ? 'এমপ্লয়ি ডাটাবেজ ও ফিক্সড স্যালারি স্ট্রাকচার' : 'Employee Database & Salary Structure'}
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {isBangla ? `মোট ${toBanglaNumber(filteredEmployees.length)} জন কর্মকর্তা/কর্মচারী (PF ও ESI মুক্ত)` : `Showing ${filteredEmployees.length} employee records (No PF/ESI)`}
-            </p>
-          </div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-md border border-emerald-200">
-            <span>● {isBangla ? 'PF ও ESI বাদ দিয়ে নির্ধারিত স্যালারি' : 'PF & ESI Excluded'}</span>
-          </div>
-        </div>
-
+      {/* Employees Table */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider font-bold border-b border-slate-200">
+            <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-3">{isBangla ? 'এমপ্লয়ি আইডি ও নাম' : 'Employee ID & Name'}</th>
-                <th className="px-4 py-3">{isBangla ? 'ডিপার্টমেন্ট ও পদবী' : 'Department & Designation'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মূল বেতন (Basic)' : 'Basic Salary'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মোট ভাতা (Allowances)' : 'Allowances'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'মোট গ্রস (Gross)' : 'Gross Salary'}</th>
-                <th className="px-4 py-3">{isBangla ? 'পেমেন্ট চ্যানেল' : 'Payment Method'}</th>
-                <th className="px-4 py-3 text-center">{isBangla ? 'স্ট্যাটাস' : 'Status'}</th>
-                <th className="px-4 py-3 text-right">{isBangla ? 'অ্যাকশন' : 'Actions'}</th>
+                <th className="px-4 py-3.5">Employee & ID</th>
+                <th className="px-4 py-3.5">Designation & Dept</th>
+                <th className="px-4 py-3.5 text-right">Basic Salary</th>
+                <th className="px-4 py-3.5 text-right">Allowances</th>
+                <th className="px-4 py-3.5 text-right font-black">Gross Compensation</th>
+                <th className="px-4 py-3.5">Payment Account</th>
+                <th className="px-4 py-3.5 text-center">Status</th>
+                <th className="px-4 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-slate-400">
-                    {isBangla ? 'কোনো এমপ্লয়ি রেকর্ড পাওয়া যায়নি।' : 'No employee records found.'}
+                    No employees found matching the search.
                   </td>
                 </tr>
               ) : (
                 filteredEmployees.map((emp) => {
-                  const allowances = emp.houseRentAllowance + emp.medicalAllowance + emp.conveyanceAllowance + emp.foodAllowance + emp.specialAllowance;
-                  const gross = emp.basicSalary + allowances;
+                  const totalAllow = emp.houseRentAllowance + emp.medicalAllowance + emp.conveyanceAllowance + emp.foodAllowance + emp.specialAllowance;
+                  const totalGross = emp.basicSalary + totalAllow;
 
                   return (
                     <tr key={emp.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-100 text-indigo-700 border border-slate-200 flex items-center justify-center font-bold text-xs">
-                            {emp.name.charAt(0)}
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-800">{emp.banglaName || emp.name}</div>
-                            <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1.5">
-                              <span className="font-semibold text-indigo-600">{emp.id}</span>
-                              <span>•</span>
-                              <span>{emp.name}</span>
-                            </div>
-                          </div>
+                      <td className="px-4 py-3">
+                        <div className="font-semibold text-slate-900">{emp.name}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">
+                          {emp.id} • Joined: {emp.joinDate}
                         </div>
                       </td>
 
-                      <td className="px-4 py-3.5">
-                        <div className="font-semibold text-slate-700">{emp.designation}</div>
-                        <div className="text-[11px] text-slate-500">{emp.department}</div>
+                      <td className="px-4 py-3 text-slate-700">
+                        <div>{emp.designation}</div>
+                        <div className="text-[11px] text-slate-400">{emp.department}</div>
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-800">
-                        {formatCurrency(emp.basicSalary, settings.currencySymbol, isBangla)}
+                      <td className="px-4 py-3 text-right font-mono font-semibold text-slate-900">
+                        {formatCurrency(emp.basicSalary, settings.currencySymbol)}
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-mono text-emerald-600 font-semibold">
-                        +{formatCurrency(allowances, settings.currencySymbol, isBangla)}
-                        <div className="text-[10px] text-slate-400 font-normal">
-                          {isBangla ? 'বাড়ি+চিকিৎসা+যাতায়াত' : 'Rent+Med+Conv'}
+                      <td className="px-4 py-3 text-right font-mono text-slate-600">
+                        {formatCurrency(totalAllow, settings.currencySymbol)}
+                      </td>
+
+                      <td className="px-4 py-3 text-right font-mono font-bold text-indigo-900 text-sm">
+                        {formatCurrency(totalGross, settings.currencySymbol)}
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <div className="font-semibold text-slate-800">{emp.paymentMethod}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">
+                          {emp.bankName !== 'N/A' ? `${emp.bankName} - ${emp.accountNumber}` : emp.accountNumber}
                         </div>
                       </td>
 
-                      <td className="px-4 py-3.5 text-right font-mono font-bold text-slate-900 bg-slate-50/30">
-                        {formatCurrency(gross, settings.currencySymbol, isBangla)}
-                      </td>
-
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-1.5 font-semibold text-slate-700">
-                          <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{emp.paymentMethod}</span>
-                        </div>
-                        <div className="text-[11px] text-slate-500 font-mono truncate max-w-[150px]">
-                          {emp.bankName} - {emp.accountNumber}
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-3.5 text-center">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold ${
-                          emp.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600'
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
+                          emp.status === 'Active' ? 'bg-emerald-100 text-emerald-800' :
+                          emp.status === 'Probation' ? 'bg-amber-100 text-amber-800' :
+                          'bg-slate-100 text-slate-600'
                         }`}>
-                          {emp.status === 'Active' ? (isBangla ? 'সক্রিয়' : 'Active') : emp.status}
+                          {emp.status}
                         </span>
                       </td>
 
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleOpenEdit(emp)}
-                            title={isBangla ? 'স্যালারি ও তথ্য এডিট করুন' : 'Edit Employee'}
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                            className="p-1.5 rounded text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                            title="Edit Employee & Salary Structure"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => {
-                              if (confirm(isBangla ? `${emp.name} কে তালিকা থেকে ডিলিট করতে চান?` : `Delete employee ${emp.name}?`)) {
+                              if (confirm(`Remove ${emp.name} from payroll system?`)) {
                                 onDeleteEmployee(emp.id);
                               }
                             }}
-                            title={isBangla ? 'ডিলিট করুন' : 'Delete'}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            title="Delete Employee"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -382,392 +320,226 @@ export const EmployeeManager: React.FC<EmployeeManagerProps> = ({
         </div>
       </div>
 
-      {/* Employee Modal: Add / Edit with Custom Salary Structure */}
+      {/* Add / Edit Employee Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto no-print">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-3xl overflow-hidden my-8">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col">
             <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
-                  {editingEmployee ? <Edit3 className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-800">
-                    {editingEmployee
-                      ? (isBangla ? 'এমপ্লয়ি তথ্য ও স্যালারি স্ট্রাকচার এডিট' : 'Edit Employee & Salary Structure')
-                      : (isBangla ? 'নতুন এমপ্লয়ি যোগ ও স্যালারি নির্ধারণ' : 'Add New Employee & Salary Structure')}
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    {isBangla ? 'PF এবং ESI ছাড়া পরিষ্কার বেতন কাঠামো ও ব্যাংক একাউন্ট সেটআপ' : 'Clean payroll breakdown without PF/ESI'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-xl font-bold p-1"
-              >
-                ✕
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-indigo-600" />
+                {editingEmployee ? 'Edit Employee & Salary Structure' : 'Enrol New Employee (No PF/ESI)'}
+              </h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-              {/* Section 1: Basic Info */}
+            <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 text-xs flex-1">
+              {/* Section 1: Basic Information */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-3 flex items-center gap-2">
-                  <UserCheck className="w-4 h-4" />
-                  {isBangla ? '১. ব্যক্তিগত ও প্রাতিষ্ঠানিক তথ্য' : '1. Personal & Company Information'}
+                <h4 className="font-bold text-indigo-700 uppercase tracking-wider mb-3">
+                  1. Personal & Employment Profile
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'এমপ্লয়ি আইডি (Employee ID)*' : 'Employee ID*'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Employee ID*</label>
                     <input
                       type="text"
                       required
                       value={formData.id}
                       onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono font-bold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'নাম (English Name)*' : 'Full Name (English)*'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Full Legal Name*</label>
                     <input
                       type="text"
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g. Ariful Huq"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg font-semibold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'বাংলায় নাম (Bangla Name)' : 'Bangla Name'}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.banglaName}
-                      onChange={(e) => setFormData({ ...formData, banglaName: e.target.value })}
-                      placeholder="যেমন: আরিফুল হক"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'পদবী (Designation)*' : 'Designation*'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Corporate Designation*</label>
                     <input
                       type="text"
                       required
                       value={formData.designation}
                       onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
-                      placeholder="e.g. Senior Software Engineer"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'ডিপার্টমেন্ট (Department)*' : 'Department*'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Department</label>
                     <select
                       value={formData.department}
-                      onChange={(e) => setFormData({ ...formData, department: e.target.value as Department })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
+                      onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                     >
-                      {DEPARTMENTS.map(d => (
+                      {departments.map(d => (
                         <option key={d} value={d}>{d}</option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'যোগদানের তারিখ (Joining Date)' : 'Joining Date'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Joining Date</label>
                     <input
                       type="date"
                       value={formData.joinDate}
                       onChange={(e) => setFormData({ ...formData, joinDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'মোবাইল নম্বর (Phone)' : 'Phone'}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+880 1711-XXXXXX"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'ইমেইল (Email)' : 'Email'}
-                    </label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="employee@company.com"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'স্ট্যাটাস (Status)' : 'Status'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Employment Status</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                     >
-                      <option value="Active">{isBangla ? 'Active (সক্রিয়)' : 'Active'}</option>
-                      <option value="On Leave">{isBangla ? 'On Leave (ছুটিতে)' : 'On Leave'}</option>
-                      <option value="Terminated">{isBangla ? 'Terminated (অব্যাহতি)' : 'Terminated'}</option>
+                      <option value="Active">Active Permanent</option>
+                      <option value="Probation">Probationary</option>
+                      <option value="Contractual">Contractual</option>
+                      <option value="Terminated">Terminated</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              {/* Section 2: Salary Structure (No PF / No ESI) */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center gap-2">
-                    <DollarSign className="w-4 h-4" />
-                    {isBangla ? '২. স্যালারি স্ট্রাকচার ও ফিক্সড ভাতাসমূহ (No PF & No ESI)' : '2. Salary Structure & Allowances (No PF / ESI)'}
+              {/* Section 2: Salary Structure (Strictly No PF/ESI) */}
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-indigo-700 uppercase tracking-wider">
+                    2. Monthly Compensation & Allowance Structure
                   </h4>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    {isBangla ? 'PF ও ESI প্রযোজ্য নয়' : 'No PF / ESI applied'}
+                  <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                    ✓ PF & ESI Exempt
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'মূল বেতন (Basic Salary)*' : 'Basic Salary*'} ({settings.currencySymbol})
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Basic Salary ({settings.currencySymbol})*</label>
                     <input
                       type="number"
                       required
                       min="0"
                       value={formData.basicSalary}
                       onChange={(e) => setFormData({ ...formData, basicSalary: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono font-bold text-slate-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono font-bold text-slate-900 bg-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'বাড়ি ভাড়া ভাতা (House Rent)' : 'House Rent Allowance'} ({settings.currencySymbol})
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">House Rent ({settings.currencySymbol})</label>
                     <input
                       type="number"
                       min="0"
                       value={formData.houseRentAllowance}
                       onChange={(e) => setFormData({ ...formData, houseRentAllowance: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 bg-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'চিকিৎসা ভাতা (Medical)' : 'Medical Allowance'} ({settings.currencySymbol})
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Medical Allowance</label>
                     <input
                       type="number"
                       min="0"
                       value={formData.medicalAllowance}
                       onChange={(e) => setFormData({ ...formData, medicalAllowance: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 bg-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'যাতায়াত ভাতা (Conveyance)' : 'Conveyance Allowance'} ({settings.currencySymbol})
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Conveyance / Travel</label>
                     <input
                       type="number"
                       min="0"
                       value={formData.conveyanceAllowance}
                       onChange={(e) => setFormData({ ...formData, conveyanceAllowance: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'খাবার / টিফিন ভাতা (Food)' : 'Food Allowance'} ({settings.currencySymbol})
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.foodAllowance}
-                      onChange={(e) => setFormData({ ...formData, foodAllowance: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'বিশেষ ভাতা (Special)' : 'Special Allowance'} ({settings.currencySymbol})
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.specialAllowance}
-                      onChange={(e) => setFormData({ ...formData, specialAllowance: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'ওভারটাইম রেট/ঘণ্টা (OT Rate/hr)' : 'OT Hourly Rate'} ({settings.currencySymbol})
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.overtimeHourlyRate}
-                      onChange={(e) => setFormData({ ...formData, overtimeHourlyRate: Number(e.target.value) })}
-                      placeholder="e.g. 250"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono text-slate-800 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 bg-white"
                     />
                   </div>
                 </div>
 
-                {/* Gross Calculation Total Banner */}
-                <div className="mt-4 p-3 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-between">
-                  <span className="text-xs font-bold text-indigo-900">
-                    {isBangla ? 'সর্বমোট মাসিক গ্রস স্যালারি (Total Monthly Gross):' : 'Total Monthly Gross Salary:'}
-                  </span>
-                  <span className="text-sm font-extrabold text-indigo-900 font-mono">
-                    {formatCurrency(calculateGross(formData), settings.currencySymbol, isBangla)}
-                  </span>
+                {/* Overtime Rate */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Overtime Rate per Hour ({settings.currencySymbol})</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.overtimeHourlyRate}
+                    onChange={(e) => setFormData({ ...formData, overtimeHourlyRate: Number(e.target.value) })}
+                    className="w-48 px-3 py-2 border border-slate-300 rounded-lg font-mono text-slate-900 bg-white"
+                  />
                 </div>
               </div>
 
-              {/* Section 3: Bank / Payment Channel Setup */}
+              {/* Section 3: Banking & Disbursement Details */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-3 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  {isBangla ? '৩. ব্যাংক একাউন্ট ও পেমেন্ট মেথড (Bank & Payment Channel)' : '3. Bank & Payment Channel Setup'}
+                <h4 className="font-bold text-indigo-700 uppercase tracking-wider mb-3">
+                  3. Disbursement & Banking Channel
                 </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'পেমেন্ট মাধ্যম (Payment Method)' : 'Payment Method'}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Payment Method</label>
                     <select
                       value={formData.paymentMethod}
-                      onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as PaymentMethod })}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-semibold"
+                      onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as any })}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg font-semibold"
                     >
-                      {PAYMENT_METHODS.map(pm => (
-                        <option key={pm} value={pm}>{pm}</option>
-                      ))}
+                      <option value="Bank Transfer">Bank Transfer</option>
+                      <option value="bKash">bKash (MFS)</option>
+                      <option value="Cash">Cash Voucher</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {formData.paymentMethod === 'Bank Transfer'
-                        ? (isBangla ? 'ব্যাংকের নাম (Bank Name)' : 'Bank Name')
-                        : (isBangla ? 'ওয়ালেট / গেটওয়ে নাম' : 'Wallet / Channel Name')}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Bank Name / Provider</label>
                     <input
                       type="text"
                       value={formData.bankName}
                       onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                      placeholder="e.g. BRAC Bank Ltd."
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      placeholder="e.g. BRAC Bank PLC"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {formData.paymentMethod === 'Bank Transfer'
-                        ? (isBangla ? 'একাউন্ট নম্বর (Account Number)*' : 'Account Number*')
-                        : (isBangla ? 'মোবাইল একাউন্ট নম্বর*' : 'Mobile Account No*')}
-                    </label>
+                    <label className="block font-bold text-slate-700 mb-1">Account Number / MFS</label>
                     <input
                       type="text"
                       value={formData.accountNumber}
-                      onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value, mfsNumber: e.target.value })}
-                      placeholder="e.g. 1501203498120001"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'একাউন্ট টাইটেল (Account Title)' : 'Account Title'}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.accountTitle}
-                      onChange={(e) => setFormData({ ...formData, accountTitle: e.target.value })}
-                      placeholder="Account holder name"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'শাখার নাম (Branch Name)' : 'Branch Name'}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.branchName}
-                      onChange={(e) => setFormData({ ...formData, branchName: e.target.value })}
-                      placeholder="e.g. Gulshan Branch"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      {isBangla ? 'রাউটিং নম্বর (Routing No)' : 'Routing Number'}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.routingNumber}
-                      onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })}
-                      placeholder="e.g. 060261354"
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                      placeholder="Account or Mobile No."
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono font-bold"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-slate-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50"
                 >
-                  {isBangla ? 'বাতিল' : 'Cancel'}
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-200 transition-colors"
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold shadow-sm"
                 >
-                  {isBangla ? 'সংরক্ষণ করুন (Save Employee)' : 'Save Employee'}
+                  Save Employee Profile
                 </button>
               </div>
             </form>
